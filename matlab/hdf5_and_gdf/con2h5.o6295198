@@ -1,0 +1,35 @@
+MATLAB is selecting SOFTWARE OPENGL rendering.
+
+                            < M A T L A B (R) >
+                  Copyright 1984-2018 The MathWorks, Inc.
+              R2018b Update 7 (9.5.0.1298439) 64-bit (glnxa64)
+                              January 22, 2020
+
+ 
+To get started, type doc.
+For product information, visit www.mathworks.com.
+ 
+writing h5 file
+{Error using hdf5lib2
+The HDF5 library encountered an error and produced the following stack trace
+information:
+
+    H5FD_sec2_open    unable to open file: name =
+    '/shared/sp2rc2/Shared/simulations/washmc/washmc_2p5_2p5_12p5_mach180_uni3/washmc_310000.h5',
+    errno = 17, error message = 'File exists', flags = 15, o_flags = c2
+    H5FD_open         open failed
+    H5F_open          unable to open file
+    H5Fcreate         unable to create file
+
+Error in H5F.create (line 44)
+file_id = H5ML.hdf5lib2('H5Fcreate', varargin{:});
+
+Error in sim_gridinfo/create_structures_h5 (line 34)
+               fid = H5F.create(filename);
+
+Error in writegdf3D (line 2)
+    simgridinfo.create_structures_h5(filename);
+
+Error in sac3Dtohdf5 (line 138)
+writegdf3D(gdffilename,simparams,simgridinfo,simdata);
+} 

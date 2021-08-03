@@ -51,12 +51,13 @@ cd include
 #cp iosmaugparams_ot_1020.h iosmaugparams.h
 #cp iosmaugparams_ot_256.h iosmaugparams.h
 #cp iosmaugparams_tube1_128.h iosmaugparams.h
+cp iosmaugparams_jet_hydro.h iosmaugparams.h
 
 cd ..
 
 cd src
-#cp usersource_tube1_128.cu usersource.cu
-#cp boundary_3d.cu boundary.cu
+cp usersource_jet_hydro.cu usersource.cu
+cp boundary_jet_hydro.cu boundary.cu
 make clean
 #make -f Makefile_k40 smaug
 make smaug
