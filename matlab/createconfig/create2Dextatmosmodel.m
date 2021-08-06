@@ -45,8 +45,8 @@ consts.mu=4*pi/1.0e7
        %xmax=5955555.6e0;
        %ymax=12.8496e6;
        ymax=12.0e6;
-       xmax=4.0e6;
-       zmax=4.0e6;
+       xmax=8.0e6;
+       zmax=8.0e6;
        %xmax=2.559984e6;
        %zmax=2.559984e6;
        

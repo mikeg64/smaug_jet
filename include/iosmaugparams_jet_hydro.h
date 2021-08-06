@@ -12,8 +12,8 @@ ni=1024;    //OZT tests
 ni=ni+2*ngi;
 //ni=512;
 //real xmax = 6.2831853;  
-real xmax=4.00774e6;
-real xmin=31945.0;
+real xmax=8.0156e6;
+real xmin=39688.0;
 real dx = (xmax-xmin)/(ni-2*ngi);
 //real dx = (xmax-xmin)/(ni);
 #endif
