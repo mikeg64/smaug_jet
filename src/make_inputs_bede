@@ -17,8 +17,8 @@ MYLIBS  =
 #CUDA = /usr/local/lib/nvidia-cuda/toolkit/4.0.17
 #CUDA = /usr/local/lib/nvidia-cuda/toolkit/6.5.14
 #CUDA = /usr/local/packages/libs/CUDA/8.0.44/binary/cuda
-CUDA = /opt/software/apps/libs/CUDA/10.1.243
-
+#CUDA = /opt/software/apps/libs/CUDA/10.1.243
+CUDA = /opt/software/builder/developers/compilers/cuda/10.2.89/1/default
 
 
 
