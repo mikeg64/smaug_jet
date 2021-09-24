@@ -1,4 +1,4 @@
-newfilename='2D_1024_2048_4_12p5_asc.ini';
+newfilename='2D_2048_1024_8_8_asc.ini';
 
 % 4Mmx12.5Mm
 %extrapolating atmospheric model to greater than 6Mm
@@ -8,7 +8,7 @@ simparams=sim_params;
 simgridinfo=sim_gridinfo;
 simdata=sim_data;
 
-simparams.unique_identifier="2dhydro 1024x2048";
+simparams.unique_identifier="2dhydro 2048x1024";
 
 consts.mu=0.6e0; %magnetic permeability
 consts.R=8.31e3
@@ -21,8 +21,8 @@ consts.mu=4*pi/1.0e7
        ndim=2;
        neqpar=6 ;%neqpar=7;
        nw=10; %nw=13;
-       nx1=1024;
-       nx2=2048;
+       nx1=2048;
+       nx2=1024;
        nx3=1;
        
        ng1=0;
@@ -44,7 +44,7 @@ consts.mu=4*pi/1.0e7
        zmin=39687.5;
        %xmax=5955555.6e0;
        %ymax=12.8496e6;
-       ymax=12.0e6;
+       ymax=8.0e6;
        xmax=8.0e6;
        zmax=8.0e6;
        %xmax=2.559984e6;

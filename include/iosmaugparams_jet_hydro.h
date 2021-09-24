@@ -8,14 +8,14 @@ int ngk=2;
 #ifdef USE_SAC
 //vac ozt
 int ni;
-ni=1024;    //OZT tests
+ni=1020;    //OZT tests
 ni=ni+2*ngi;
 //ni=512;
 //real xmax = 6.2831853;  
-real xmax=8.0156e6;
-real xmin=39688.0;
-real dx = (xmax-xmin)/(ni-2*ngi);
-//real dx = (xmax-xmin)/(ni);
+real xmax=4.00774e6;
+real xmin=31945.0;
+//real dx = (xmax-xmin)/(ni-2*ngi);
+real dx = (xmax-xmin)/(ni-1);
 #endif
 
 
@@ -30,8 +30,8 @@ nj=nj+2*ngj;
 //real ymax = 6.2831853;
 real ymin=187689.0; 
 real ymax = 1.20115e7;   
-//real dy = ymax/(nj);
-real dy = (ymax-ymin)/(nj-2*ngj);
+real dy = (ymax-ymin)/(nj-1);
+//real dy = (ymax-ymin)/(nj-2*ngj);
     
 //nj=41;
 #endif
@@ -76,7 +76,7 @@ char *cfgfile="configs/2D_1024_2048_4_12p5_asc.ini";
 //char *cfgfile="configs/zero1_ot_asc_256.ini";
 //char *cfgfile="zero1_BW_bin.ini";
 //char *cfgout="zero1_np010203."
-char *cfgout="out/jet_hydro";
+char *cfgout="/nobackup/projects/bdshe01/cs1mkg/smaug_jet/hydro1/hydro1";
 //char *cfgout="zero1_np0201.out";
 
 
@@ -94,7 +94,7 @@ dt=0.001;
 //nt=5000;
 //nt=200000;
 //nt=150000;
-nt=10001;
+nt=550000;
 
 
 real *t=(real *)calloc(nt,sizeof(real));
@@ -142,8 +142,8 @@ p->gamma=1.66667;  //OZ test
 p->mu=1.0;
 p->eta=0.0;
 p->g[0]=0.0;
-p->g[1]=-274.0;
-p->g[2]=0.0;
+p->g[1]=0.0;
+p->g[2]=-274.0;
 #ifdef USE_SAC_3D
 
 #endif
@@ -157,6 +157,7 @@ p->divbon=0.0;
 p->divbfix=0.0;
 p->hyperdifmom=1.0;
 p->readini=1.0;
+//p->cfgsavefrequency=1000;
 p->cfgsavefrequency=1000;
 
 
@@ -178,10 +179,10 @@ for(i=0;i<NVAR;i++)
 
 p->chyp[rho]=0.1;
 p->chyp[energy]=0.1;
-p->chyp[b1]=0.6;
-p->chyp[b2]=0.6;
-p->chyp[mom1]=0.4;
-p->chyp[mom2]=0.4;
+p->chyp[b1]=0.4;
+p->chyp[b2]=0.4;
+p->chyp[mom1]=0.2;
+p->chyp[mom2]=0.2;
 p->chyp[rho]=0.1;
 
 p->npe=1;

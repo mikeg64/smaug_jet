@@ -26,7 +26,7 @@
 # monitor queue using queue
 
 #SBATCH --account=bdshe01  # Run job under project <project>
-#SBATCH --time=1:0:0         # Run for a max of 1 hour
+#SBATCH --time=48:0:0         # Run for a max of 1 hour
 
 # Node resources:
 # (choose between 1-4 gpus per node)

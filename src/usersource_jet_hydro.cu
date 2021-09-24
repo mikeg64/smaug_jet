@@ -11,7 +11,7 @@ int addsourceterms2_MODID(real *dw, real *wd, real *w, struct params *p, struct 
    real dx,dy,dz;
    real aa;
    real s_period;
-   real tdep;
+   real qt, tdep;
    real s_rad1,s_rad2;
 
    real vvv;
@@ -24,17 +24,17 @@ int addsourceterms2_MODID(real *dw, real *wd, real *w, struct params *p, struct 
 	  i=ii[0];
 	  j=ii[1];
 
-     xc1=4.0e6;
-    xc2=193465.0;
+     xc1=2.0e6;
+    xc2=600000.0;
     qt=p->qt;
 
-    aa=1.0;
+    aa=270;
 
           xp=(p->xmin[0])+(((real)i)*(p->dx[0]));
           yp=(p->xmin[1])+(((real)j)*(p->dx[1]));
      
   
-    s_period=100.0;
+    s_period=300.0;
     //tdep=1.00;
     tdep=sin(qt*2.0*PI/s_period);
 
@@ -42,12 +42,12 @@ int addsourceterms2_MODID(real *dw, real *wd, real *w, struct params *p, struct 
      r2=(yp-xc2)*(yp-xc2);
 
  
- s_rad1=0.1;
- s_rad2=0.02;
+ s_rad1=10000.0;
+ s_rad2=10000.0;
  
-      vvv=aa*tdep*exp(-(r1/(s_rad1*s_rad1))-(r2/(s_rad2*s_rad2)));
+      vvv=aa*tdep*exp(-(r1/(s_rad1*s_rad1)))*exp(-(r2/(s_rad2*s_rad2)));
 
-      if(i==3 && j==149)
+     // if(i==3 && j==149)
       //if(i==3 && j==200)
      /* {
                   p->test=vv;
@@ -62,6 +62,10 @@ int addsourceterms2_MODID(real *dw, real *wd, real *w, struct params *p, struct 
                 p->chyp[1]=vy;
                 p->chyp[2]=(w[fencode3_MODID(p,ii,mom1)]);
 	}*/
+
+
+//if(i==512 && j==15 )
+//printf("%g %g  %g %g %g \n", xp, yp,vvv,r1, r2);
  
 
  
