@@ -28,7 +28,7 @@ int addsourceterms2_MODID(real *dw, real *wd, real *w, struct params *p, struct 
     xc2=600000.0;
     qt=p->qt;
 
-    aa=270;
+    aa=50;
 
           xp=(p->xmin[0])+(((real)i)*(p->dx[0]));
           yp=(p->xmin[1])+(((real)j)*(p->dx[1]));

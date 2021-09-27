@@ -94,7 +94,7 @@ dt=0.001;
 //nt=5000;
 //nt=200000;
 //nt=150000;
-nt=550000;
+nt=3000000;
 
 
 real *t=(real *)calloc(nt,sizeof(real));
@@ -208,7 +208,13 @@ for(int ibound=0; ibound<2; ibound++)
 }
 
 
-
+//set boundary types
+int idir=0;
+for(int ii=0; ii<NVAR; ii++)
+for(int ibound=0; ibound<2; ibound++)
+{
+   (p->boundtype[ii][idir][ibound])=0;  //period=0 mpi=1 mpiperiod=2  cont=3 contcd4=4 fixed=5 symm=6 asymm=7
+}
 
 
 

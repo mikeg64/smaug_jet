@@ -72,7 +72,9 @@ int finishsteering=0;
 
 //char *cfgfile="zero1_np020203.ini";
 //char *cfgfile="zero1_np0201.ini";
-char *cfgfile="configs/2D_2048_1024_8_8_asc.ini";
+char *cfgfile="configs/2D_2048_1024_8_8_asc.ini"; 
+//original
+//char *cfgfile="/nobackup/projects/bdshe01/cs1mkg/smaug_jet/hydro2/hydro2_asc_549000.ini";
 //char *cfgfile="configs/zero1_ot_asc_256.ini";
 //char *cfgfile="zero1_BW_bin.ini";
 //char *cfgout="zero1_np010203."
@@ -86,7 +88,7 @@ char *cfgout="/nobackup/projects/bdshe01/cs1mkg/smaug_jet/hydro2/hydro2";
 
 #ifdef USE_SAC
 //dt=0.0002;  //OZT test
-dt=0.001;
+dt=0.0005;
 #endif
 
 
@@ -94,7 +96,7 @@ dt=0.001;
 //nt=5000;
 //nt=200000;
 //nt=150000;
-nt=550000;
+nt=3000000;
 
 
 real *t=(real *)calloc(nt,sizeof(real));
@@ -121,8 +123,8 @@ p->dx[1]=dy;
 p->qt=0.0;
 p->it=0;
 
-//p->qt=453.0;
-//p->it=453001;
+//p->qt=549.0;
+//p->it=549001;
 
 
 
@@ -142,8 +144,8 @@ p->gamma=1.66667;  //OZ test
 p->mu=1.0;
 p->eta=0.0;
 p->g[0]=0.0;
-p->g[1]=0.0;
-p->g[2]=-274.0;
+p->g[2]=0.0;
+p->g[1]=-274.0;
 #ifdef USE_SAC_3D
 
 #endif
@@ -158,7 +160,7 @@ p->divbfix=0.0;
 p->hyperdifmom=1.0;
 p->readini=1.0;
 //p->cfgsavefrequency=1000;
-p->cfgsavefrequency=1000;
+p->cfgsavefrequency=2000;
 
 
 p->xmax[0]=xmax;
@@ -177,13 +179,13 @@ p->chyp3=0.00000;
 for(i=0;i<NVAR;i++)
   p->chyp[i]=0.0;
 
-p->chyp[rho]=0.1;
-p->chyp[energy]=0.1;
+p->chyp[rho]=0.2;
+p->chyp[energy]=0.2;
 p->chyp[b1]=0.4;
 p->chyp[b2]=0.4;
 p->chyp[mom1]=0.2;
 p->chyp[mom2]=0.2;
-p->chyp[rho]=0.1;
+p->chyp[rho]=0.2;
 
 p->npe=1;
 
@@ -204,10 +206,15 @@ for(int ii=0; ii<NVAR; ii++)
 for(int idir=0; idir<NDIM; idir++)
 for(int ibound=0; ibound<2; ibound++)
 {
-   (p->boundtype[ii][idir][ibound])=4;  //period=0 mpi=1 mpiperiod=2  cont=3 contcd4=4 fixed=5 symm=6 asymm=7
+   (p->boundtype[ii][idir][ibound])=3;  //period=0 mpi=1 mpiperiod=2  cont=3 contcd4=4 fixed=5 symm=6 asymm=7
 }
 
-
+//int idir=0;
+//for(int ii=0; ii<NVAR; ii++)
+//for(int ibound=0; ibound<2; ibound++)
+//{
+//   (p->boundtype[ii][idir][ibound])=3;  //period=0 mpi=1 mpiperiod=2  cont=3 contcd4=4 fixed=5 symm=6 asymm=7
+//}
 
 
 
