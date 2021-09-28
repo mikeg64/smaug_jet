@@ -20,6 +20,7 @@ int addsourceterms2_MODID(real *dw, real *wd, real *w, struct params *p, struct 
 
    real xp,yp,zp;
    int i,j,k;
+   Int n1;
  	  
 	  i=ii[0];
 	  j=ii[1];
@@ -28,12 +29,12 @@ int addsourceterms2_MODID(real *dw, real *wd, real *w, struct params *p, struct 
     xc2=600000.0;
     qt=p->qt;
 
-    aa=100;
+    aa=50;
 
           xp=(p->xmin[0])+(((real)i)*(p->dx[0]));
           yp=(p->xmin[1])+(((real)j)*(p->dx[1]));
      
-  
+   xxmax=(p->xmax[0])-2*(((real)j)*(p->dx[0]));
     s_period=300.0;
     //tdep=1.00;
     tdep=sin(qt*2.0*PI/s_period);
@@ -44,8 +45,9 @@ int addsourceterms2_MODID(real *dw, real *wd, real *w, struct params *p, struct 
  
  s_rad1=10000.0;
  s_rad2=10000.0;
- 
-      vvv=aa*tdep*exp(-(r1/(s_rad1*s_rad1)))*exp(-(r2/(s_rad2*s_rad2)));
+ exp_z=exp(-(r2/(s_rad2*s_rad2)))
+ exp_xy=sin(PI*xp*(n1+1)/xxmax)*exp_z;
+      vvv=aa*tdep*exp_xy;
 
      // if(i==3 && j==149)
       //if(i==3 && j==200)

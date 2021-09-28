@@ -8,12 +8,12 @@ int ngk=2;
 #ifdef USE_SAC
 //vac ozt
 int ni;
-ni=1020;    //OZT tests
+ni=2044;    //OZT tests
 ni=ni+2*ngi;
 //ni=512;
 //real xmax = 6.2831853;  
-real xmax=4.00774e6;
-real xmin=31945.0;
+real xmax=8.00778e6;
+real xmin=31910.0;
 //real dx = (xmax-xmin)/(ni-2*ngi);
 real dx = (xmax-xmin)/(ni-1);
 #endif
@@ -23,13 +23,13 @@ real dx = (xmax-xmin)/(ni-1);
 // Define the y domain
 #ifdef USE_SAC
 //vac ozt
-int nj = 2044;  //OZT tests
+int nj = 1020;  //OZT tests
 //int nj=2;  //BW test
 nj=nj+2*ngj;
 //nj=512;
 //real ymax = 6.2831853;
-real ymin=187689.0; 
-real ymax = 1.20115e7;   
+real ymin=183968.0; 
+real ymax = 8.01525e6;   
 real dy = (ymax-ymin)/(nj-1);
 //real dy = (ymax-ymin)/(nj-2*ngj);
     
@@ -72,7 +72,9 @@ int finishsteering=0;
 
 //char *cfgfile="zero1_np020203.ini";
 //char *cfgfile="zero1_np0201.ini";
-char *cfgfile="configs/2D_1024_2048_4_12p5_asc.ini";
+char *cfgfile="configs/2D_2048_1024_8_8_asc.ini"; 
+//original
+//char *cfgfile="/nobackup/projects/bdshe01/cs1mkg/smaug_jet/hydro2/hydro2_asc_549000.ini";
 //char *cfgfile="configs/zero1_ot_asc_256.ini";
 //char *cfgfile="zero1_BW_bin.ini";
 //char *cfgout="zero1_np010203."
@@ -121,8 +123,8 @@ p->dx[1]=dy;
 p->qt=0.0;
 p->it=0;
 
-//p->qt=453.0;
-//p->it=453001;
+//p->qt=549.0;
+//p->it=549001;
 
 
 
@@ -142,8 +144,8 @@ p->gamma=1.66667;  //OZ test
 p->mu=1.0;
 p->eta=0.0;
 p->g[0]=0.0;
-p->g[1]=0.0;
-p->g[2]=-274.0;
+p->g[2]=0.0;
+p->g[1]=-274.0;
 #ifdef USE_SAC_3D
 
 #endif
@@ -158,7 +160,7 @@ p->divbfix=0.0;
 p->hyperdifmom=1.0;
 p->readini=1.0;
 //p->cfgsavefrequency=1000;
-p->cfgsavefrequency=1000;
+p->cfgsavefrequency=2000;
 
 
 p->xmax[0]=xmax;
@@ -177,13 +179,13 @@ p->chyp3=0.00000;
 for(i=0;i<NVAR;i++)
   p->chyp[i]=0.0;
 
-p->chyp[rho]=0.1;
-p->chyp[energy]=0.1;
+p->chyp[rho]=0.2;
+p->chyp[energy]=0.2;
 p->chyp[b1]=0.4;
 p->chyp[b2]=0.4;
 p->chyp[mom1]=0.2;
 p->chyp[mom2]=0.2;
-p->chyp[rho]=0.1;
+p->chyp[rho]=0.2;
 
 p->npe=1;
 
@@ -204,17 +206,16 @@ for(int ii=0; ii<NVAR; ii++)
 for(int idir=0; idir<NDIM; idir++)
 for(int ibound=0; ibound<2; ibound++)
 {
-   (p->boundtype[ii][idir][ibound])=4;  //period=0 mpi=1 mpiperiod=2  cont=3 contcd4=4 fixed=5 symm=6 asymm=7
+   (p->boundtype[ii][idir][ibound])=3;  //period=0 mpi=1 mpiperiod=2  cont=3 contcd4=4 fixed=5 symm=6 asymm=7
 }
 
+//int idir=0;
+//for(int ii=0; ii<NVAR; ii++)
+//for(int ibound=0; ibound<2; ibound++)
+//{
+//   (p->boundtype[ii][idir][ibound])=3;  //period=0 mpi=1 mpiperiod=2  cont=3 contcd4=4 fixed=5 symm=6 asymm=7
+//}
 
-//set boundary types
-int idir=0;
-for(int ii=0; ii<NVAR; ii++)
-for(int ibound=0; ibound<2; ibound++)
-{
-   (p->boundtype[ii][idir][ibound])=0;  //period=0 mpi=1 mpiperiod=2  cont=3 contcd4=4 fixed=5 symm=6 asymm=7
-}
 
 
 
