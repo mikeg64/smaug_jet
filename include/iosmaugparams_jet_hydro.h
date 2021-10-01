@@ -72,9 +72,9 @@ int finishsteering=0;
 
 //char *cfgfile="zero1_np020203.ini";
 //char *cfgfile="zero1_np0201.ini";
-char *cfgfile="configs/2D_2048_1024_8_8_asc.ini"; 
+//char *cfgfile="configs/2D_2048_1024_8_8_asc.ini"; 
 //original
-//char *cfgfile="/nobackup/projects/bdshe01/cs1mkg/smaug_jet/hydro2/hydro2_asc_549000.ini";
+char *cfgfile="/nobackup/projects/bdshe01/cs1mkg/smaug_jet/hydro1/hydro1_asc_924000.ini";
 //char *cfgfile="configs/zero1_ot_asc_256.ini";
 //char *cfgfile="zero1_BW_bin.ini";
 //char *cfgout="zero1_np010203."
@@ -120,11 +120,11 @@ p->dx[0]=dx;
 p->dx[1]=dy;
 
 
-p->qt=0.0;
-p->it=0;
+//p->qt=0.0;
+//p->it=0;
 
-//p->qt=549.0;
-//p->it=549001;
+p->qt=924.0;
+p->it=924001;
 
 
 
