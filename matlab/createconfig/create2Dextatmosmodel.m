@@ -412,7 +412,7 @@ end
       
       
       
-[simparams, simgridinfo, simdata]=generatefield_verttube(simparams, simgridinfo, simdata, 'arcade');         
+[simparams, simgridinfo, simdata]=generatefield_verttube(simparams, simgridinfo, simdata, 'vertfieldtube');         
       
       
       
