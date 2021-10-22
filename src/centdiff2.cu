@@ -1,6 +1,6 @@
 #include "../include/cudapars.h"
-#include "../include/paramssteeringtest1.h"
-#include "../include/iobparams.h"
+//#include "../include/paramssteeringtest1.h"
+//#include "../include/iobparams.h"
 /////////////////////////////////////
 // standard imports
 /////////////////////////////////////
@@ -1108,7 +1108,7 @@ void checkErrors_cd2(char *label)
 
 
 
-int cucentdiff2(struct params **p, struct params **d_p, struct state **d_s, real **d_w,  real **d_wmod, real **d_dwn1, real **d_wd, int order,int ordero, real dt, int field,int dir)
+extern "C" int cucentdiff2(struct params **p, struct params **d_p, struct state **d_s, real **d_w,  real **d_wmod, real **d_dwn1, real **d_wd, int order,int ordero, real dt, int field,int dir)
 {
  int dimp=(((*p)->n[0]))*(((*p)->n[1]));
 
@@ -1164,7 +1164,7 @@ int cucentdiff2(struct params **p, struct params **d_p, struct state **d_s, real
 
 }
 
-int cugrav(struct params **p, struct params **d_p, struct state **d_s, real **d_w,  real **d_wmod, real **d_dwn1, real **d_wd, int order,int ordero, real dt)
+extern "C" int cugrav(struct params **p, struct params **d_p, struct state **d_s, real **d_w,  real **d_wmod, real **d_dwn1, real **d_wd, int order,int ordero, real dt)
 {
  int dimp=(((*p)->n[0]))*(((*p)->n[1]));
 
@@ -1201,7 +1201,7 @@ int cugrav(struct params **p, struct params **d_p, struct state **d_s, real **d_
 
 }
 
-int cusource(struct params **p, struct params **d_p, struct state **d_s, real **d_w,  real **d_wmod, real **d_dwn1, real **d_wd, int order,int ordero, real dt)
+extern "C" int cusource(struct params **p, struct params **d_p, struct state **d_s, real **d_w,  real **d_wmod, real **d_dwn1, real **d_wd, int order,int ordero, real dt)
 {
  int dimp=(((*p)->n[0]))*(((*p)->n[1]));
 

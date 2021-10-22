@@ -68,7 +68,7 @@ DEFINE_PRECISION(double)
  #endif
 
 #define PI 3.14159265358979
-struct Meta {
+struct meta {
    char *directory ;
    char *author;
    char *sdate;
@@ -80,11 +80,11 @@ struct Meta {
    char *out_file;
 };
 
-struct Iome {
+/*struct iome {
     char *server;
     int port;
     int id;
-};
+};*/
 
 struct params {
 	int n[NDIM];
@@ -207,6 +207,42 @@ struct hydrovars{
          #endif*/
 
 
+
+#define MSIZE1 128
+#define MSIZE2 128
+#define MSIZE3 128
+
+
+struct bparams {
+
+
+        /*#ifdef USE_SAC_3D
+          real fixed1[4*NDIM*NDIM*NVAR];
+          real fixed2[4*NDIM*NDIM*NVAR];
+          real fixed3[4*NDIM*NDIM*NVAR];
+        #else
+          real fixed1[4*NDIM*NVAR];
+          real fixed2[4*NDIM*NVAR];
+        #endif*/
+
+
+        #ifdef USE_SAC_3D
+          real fixed1[4*MSIZE2*MSIZE3*NVAR];
+          real fixed2[4*MSIZE1*MSIZE3*NVAR];
+          real fixed3[4*MSIZE1*MSIZE2*NVAR];
+        #else
+          real fixed1[4*MSIZE2*NVAR];
+          real fixed2[4*MSIZE1*NVAR];
+        #endif
+
+ 
+};
+
+
+typedef struct bparams Bparams;
+
+
+
 typedef enum mode {run,scatter,gather,init,redistribute} MODE;
 
 //typedef enum oldvars {mom3, b3,b3b} CEVOLD;
@@ -250,9 +286,9 @@ typedef enum temp2vars {tmpnui,tmpnui1,tmpnui2 } TEV2; //note tmpnui1 and tmpnui
 typedef struct Source source;
 typedef struct Constants constants;
 typedef struct Domain domain;
-typedef struct Iome iome;
-typedef struct Meta meta;
-typedef struct Stateinfo stateinfo;
+//typedef struct Iome iome;
+typedef struct meta Meta;
+typedef struct stateinfo Stateinfo;
 typedef struct params Params;
 #endif
 

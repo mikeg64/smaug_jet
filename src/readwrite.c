@@ -1,6 +1,6 @@
 #include "../include/readwrite.h"
 
-unsigned long int encode3_rw(params *dp,int ix, int iy, int iz, int field) {
+unsigned long int encode3_rw(struct params *dp,int ix, int iy, int iz, int field) {
 
 
   #ifdef USE_SAC_3D
@@ -70,7 +70,7 @@ int createlog(char *logfile)
 	return status;
 }
 
-int appendlog(char *logfile, params p, state s)
+int appendlog(char *logfile, struct params p, struct state s)
 {
   int status=0;
       FILE *fdt=0;
@@ -82,7 +82,7 @@ int appendlog(char *logfile, params p, state s)
   return status;
 }
 
-int writeconfig(char *name,int n,params p, meta md, real *w)
+int writeconfig(char *name,int n, struct params p, struct meta md, real *w)
 {
   int status=0;
   int i1,j1;
@@ -157,7 +157,7 @@ fprintf(fdt,"%d %d %f %f %f %f %f %f %f %f\n",i1,j1,w[(j1*ni+i1)+(ni*nj*rho)],w[
 
 
 
-int writevacconfig(char *name,int n,params p, meta md, real *w, real *wd, state st)
+int writevacconfig(char *name,int n, struct params p, struct meta md, real *w, real *wd, struct state st)
 {
   int status=0;
   int i1,j1,k1,ifield;
@@ -366,7 +366,7 @@ for( j1=0;j1<nj;j1++)
 }
 
 
-int writevacgatherconfig(char *name,int n,params p, meta md, real *w, real *wd, state st)
+int writevacgatherconfig(char *name,int n,struct params p, struct meta md, real *w, real *wd, struct state st)
 {
   int status=0;
   int i1,j1,k1,ifield;
@@ -577,7 +577,7 @@ for( j1=jstart;j1<jfin;j1++)
 /*Big problems with reading fortran unformatted "binary files" need to include 
   record field*/
 
-int readbinvacconfig(char *name,params p, meta md, real *w,real *wd, state st)
+int readbinvacconfig(char *name, struct params p, struct meta md, real *w,real *wd, struct state st)
 {
 
   int status=0;
@@ -772,7 +772,7 @@ for( j1=0;j1<nj;j1++)
 }
 
 
-int writevtkconfig(char *name,int n,params p, meta md, real *w)
+int writevtkconfig(char *name,int n, struct params p, struct meta md, real *w)
 {
   int status=0;
   int i1,j1,k1;
@@ -964,7 +964,7 @@ nk=p.n[2];
 
 
 
-int readconfig(char *cfgfile, params p, meta md, real *w)
+int readconfig(char *cfgfile, struct params p, struct meta md, real *w)
 {
   int status=0;
 
@@ -972,7 +972,7 @@ int readconfig(char *cfgfile, params p, meta md, real *w)
 }
 
 
-int readasciivacconfig(char *cfgfile, params p, meta md,state *st, real *w, real *wd, char **hlines, int mode)
+int readasciivacconfig(char *cfgfile, struct params p, struct meta md, struct state *st, real *w, real *wd, char **hlines, int mode)
 {
   int status=0;
   int i;
@@ -1081,7 +1081,7 @@ for( i1=is;i1<(iif);i1++)
   return status;
 }
 
-int writeasciivacconfig(char *cfgfile, params p, meta md, real *w,real *wd, char **hlines, state st, int mode)
+int writeasciivacconfig(char *cfgfile, struct params p, struct meta md, real *w,real *wd, char **hlines, struct state st, int mode)
 {
   int status=0;
   int i;
@@ -1315,7 +1315,7 @@ for( k1=ks;k1<(kf);k1++)
 }
 
 
-int createconfigsegment(params p,  real *wnew,real *wdnew, real *w,real *wd)
+int createconfigsegment(struct params p,  real *wnew,real *wdnew, real *w,real *wd)
 {
   int status=0;
   int i,var;
@@ -1388,7 +1388,7 @@ int oshift;
 }
 
 
-int gathersegment(params p,  real *wnew,real *wdnew, real *w,real *wd)
+int gathersegment(struct params p,  real *wnew,real *wdnew, real *w,real *wd)
 {
   int status=0;
   int i,var;
@@ -1450,7 +1450,7 @@ int oshift;
 }
 
 
-void readatmos(params p,real *w)
+void readatmos(struct params p,real *w)
 {
 int n=-1;
 int count;

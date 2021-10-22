@@ -1,5 +1,5 @@
 #include "../include/cudapars.h"
-#include "../include/paramssteeringtest1.h"
+//#include "../include/paramssteeringtest1.h"
 
 /////////////////////////////////////
 // standard imports
@@ -111,7 +111,7 @@ void checkErrors_hdbne2(char *label)
 
 
 
-int cuhyperdifbsourcene2(struct params **p, real **w, real **wnew, struct params **d_p, real **d_w, real **d_wnew,  real **d_wmod, real **d_dwn1, real **d_wd, int order,int ordero, real **d_wtemp, int field, int dim, int jj, int ii0,int mm,real sb)
+extern "C" int cuhyperdifbsourcene2(struct params **p, real **w, real **wnew, struct params **d_p, real **d_w, real **d_wnew,  real **d_wmod, real **d_dwn1, real **d_wd, int order,int ordero, real **d_wtemp, int field, int dim, int jj, int ii0,int mm,real sb)
 {
 
 

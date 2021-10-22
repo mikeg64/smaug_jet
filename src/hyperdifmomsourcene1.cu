@@ -1,6 +1,6 @@
 #include "../include/cudapars.h"
-#include "../include/paramssteeringtest1.h"
-#include "../include/iobparams.h"
+//#include "../include/paramssteeringtest1.h"
+//#include "../include/iobparams.h"
 /////////////////////////////////////
 // standard imports
 /////////////////////////////////////

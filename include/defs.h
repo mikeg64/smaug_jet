@@ -1,6 +1,6 @@
 
-char **hlines; //header lines for vac config files 
-hlines=(char **)calloc(5, sizeof(char*));
+//char **hlines; //header lines for vac config files 
+char **hlines=(char **)calloc(5, sizeof(char*));
 // Define time-domain
 real dt;
 

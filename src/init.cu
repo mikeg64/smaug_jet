@@ -1,6 +1,6 @@
 #include "../include/cudapars.h"
-#include "../include/iotypes.h"
-#include "../include/iobparams.h"
+//#include "../include/iotypes.h"
+//#include "../include/iobparams.h"
 /////////////////////////////////////
 // standard imports
 /////////////////////////////////////
@@ -2180,7 +2180,7 @@ void checkErrors_i(char *label)
 
 }
 
-int cusync(struct params **p)
+extern "C" int cusync(struct params **p)
 {
 
   #ifdef USE_GPUD
@@ -2200,7 +2200,7 @@ int cusync(struct params **p)
   return 0;
 }
 
-int cusetgpu(struct params **p)
+extern "C" int cusetgpu(struct params **p)
 {
   #ifdef USE_GPUD
     if(((*p)->ipe)==-1)
@@ -2216,7 +2216,7 @@ int cusetgpu(struct params **p)
   return 0;
 }
 
-int cuinit(struct params **p, struct bparams **bp, real **wmod,real **wnew, real **wd, struct state **state, struct params **d_p, struct bparams **d_bp, real **d_wnew, real **d_wmod, real **d_dwn1, real **d_wd, struct state **d_state, real **d_wtemp, real **d_wtemp1, real **d_wtemp2)
+extern "C" int cuinit(struct params **p, struct bparams **bp, real **wmod,real **wnew, real **wd, struct state **state, struct params **d_p, struct bparams **d_bp, real **d_wnew, real **d_wmod, real **d_dwn1, real **d_wd, struct state **d_state, real **d_wtemp, real **d_wtemp1, real **d_wtemp2)
 {
 
 
@@ -2447,7 +2447,7 @@ if((*p)->mode !=3)
 
 
 
-int cuupdatemod(struct params **p, struct bparams **bp,real **w, real **wnew, real **wd, struct state **state, struct params **d_p, struct bparams **d_bp,real **d_w, real **d_wnew, real **d_wmod, real **d_dwn1, real **d_wd, struct state **d_state, real **d_wtemp, real **d_wtemp1, real **d_wtemp2)
+extern "C" int cuupdatemod(struct params **p, struct bparams **bp,real **w, real **wnew, real **wd, struct state **state, struct params **d_p, struct bparams **d_bp,real **d_w, real **d_wnew, real **d_wmod, real **d_dwn1, real **d_wd, struct state **d_state, real **d_wtemp, real **d_wtemp1, real **d_wtemp2)
 {
   int deviceCount;
   int dir;
@@ -2496,7 +2496,7 @@ int cuupdatemod(struct params **p, struct bparams **bp,real **w, real **wnew, re
 ! ixf          - coordinate inside of ixe
 ! qx           - x with an extended index range for calculation of dx   */
 
-int initgrid(struct params **p,   struct state **state, real **wd, struct params **d_p,  real **d_dwn1, real **d_wd, struct state **d_state, real **d_wtemp, real **d_wtemp1, real **d_wtemp2)
+extern "C" int initgrid(struct params **p,   struct state **state, real **wd, struct params **d_p,  real **d_dwn1, real **d_wd, struct state **d_state, real **d_wtemp, real **d_wtemp1, real **d_wtemp2)
 {
     real *ttemp2;
     int ii[NDIM];
@@ -3069,7 +3069,7 @@ printf("dx=%g dy=%g\n",(*p)->dx[0], (*p)->dx[1] );
 //this will update only the ghost cells transferred between the CPU's
 
 
-int cuinitmgpubuffers(struct params **p,real **w, real **wmod, real **temp2, real **gmpivisc0, real **gmpivisc1, real **gmpivisc2,   real **gmpiw0, real **gmpiwmod0,   real **gmpiw1, real **gmpiwmod1,   real **gmpiw2, real **gmpiwmod2, struct params **d_p,   real **d_w, real **d_wmod,real **d_wtemp2,    real **d_gmpivisc0,    real **d_gmpivisc1,    real **d_gmpivisc2,   real **d_gmpiw0, real **d_gmpiwmod0,   real **d_gmpiw1, real **d_gmpiwmod1,   real **d_gmpiw2, real **d_gmpiwmod2)
+extern "C" int cuinitmgpubuffers(struct params **p,real **w, real **wmod, real **temp2, real **gmpivisc0, real **gmpivisc1, real **gmpivisc2,   real **gmpiw0, real **gmpiwmod0,   real **gmpiw1, real **gmpiwmod1,   real **gmpiw2, real **gmpiwmod2, struct params **d_p,   real **d_w, real **d_wmod,real **d_wtemp2,    real **d_gmpivisc0,    real **d_gmpivisc1,    real **d_gmpivisc2,   real **d_gmpiw0, real **d_gmpiwmod0,   real **d_gmpiw1, real **d_gmpiwmod1,   real **d_gmpiw2, real **d_gmpiwmod2)
 {
 
   int szw,  szvisc0,szvisc1,szvisc2,szw0,szw1,szw2;
@@ -3147,7 +3147,7 @@ int cuinitmgpubuffers(struct params **p,real **w, real **wmod, real **temp2, rea
 
 //copy gpu memory data to mpi send buffer for w and wmod
 //just update the edges of w and wmod with values copied from gmpiw, gmpiwmod and gmpivisc
-int cucopywtompiwmod(struct params **p,real **w, real **wmod,    real **gmpiw0, real **gmpiwmod0,    real **gmpiw1, real **gmpiwmod1,    real **gmpiw2, real **gmpiwmod2, struct params **d_p  ,real **d_w, real **d_wmod,   real **d_gmpiw0, real **d_gmpiwmod0,   real **d_gmpiw1, real **d_gmpiwmod1,   real **d_gmpiw2, real **d_gmpiwmod2, int order, int idir)
+extern "C" int cucopywtompiwmod(struct params **p,real **w, real **wmod,    real **gmpiw0, real **gmpiwmod0,    real **gmpiw1, real **gmpiwmod1,    real **gmpiw2, real **gmpiwmod2, struct params **d_p  ,real **d_w, real **d_wmod,   real **d_gmpiw0, real **d_gmpiwmod0,   real **d_gmpiw1, real **d_gmpiwmod1,   real **d_gmpiw2, real **d_gmpiwmod2, int order, int idir)
 {
      int i1,i2,i3;
      int ii[NDIM];
@@ -3238,7 +3238,7 @@ cudaThreadSynchronize();
 
 //copy gpu memory data to mpi send buffer for w and wmod
 //just update the edges of w and wmod with values copied from gmpiw, gmpiwmod and gmpivisc
-int cucopywtompiw(struct params **p,real **w, real **wmod,    real **gmpiw0, real **gmpiwmod0,    real **gmpiw1, real **gmpiwmod1,    real **gmpiw2, real **gmpiwmod2, struct params **d_p  ,real **d_w, real **d_wmod,   real **d_gmpiw0, real **d_gmpiwmod0,   real **d_gmpiw1, real **d_gmpiwmod1,   real **d_gmpiw2, real **d_gmpiwmod2, int order, int idir)
+extern "C" int cucopywtompiw(struct params **p,real **w, real **wmod,    real **gmpiw0, real **gmpiwmod0,    real **gmpiw1, real **gmpiwmod1,    real **gmpiw2, real **gmpiwmod2, struct params **d_p  ,real **d_w, real **d_wmod,   real **d_gmpiw0, real **d_gmpiwmod0,   real **d_gmpiw1, real **d_gmpiwmod1,   real **d_gmpiw2, real **d_gmpiwmod2, int order, int idir)
 {
      int i1,i2,i3;
      int ii[NDIM];
@@ -3460,7 +3460,7 @@ cudaThreadSynchronize();
 
 
 
-int cucopywdtompiwd(struct params **p,real **wd,    real **gmpiw0,    real **gmpiw1,    real **gmpiw2, struct params **d_p  ,real **d_wd,   real **d_gmpiw0,   real **d_gmpiw1,   real **d_gmpiw2, int order, int idir)
+extern "C" int cucopywdtompiwd(struct params **p,real **wd,    real **gmpiw0,    real **gmpiw1,    real **gmpiw2, struct params **d_p  ,real **d_wd,   real **d_gmpiw0,   real **d_gmpiw1,   real **d_gmpiw2, int order, int idir)
 {
      int i1,i2,i3;
      int ii[NDIM];
@@ -3555,7 +3555,7 @@ cudaThreadSynchronize();
 
 
 //copy mpi recv buffer to gpu memory     
-int cucopywfrommpiw(struct params **p,real **w, real **wmod,    real **gmpiw0, real **gmpiwmod0,    real **gmpiw1, real **gmpiwmod1,    real **gmpiw2, real **gmpiwmod2, struct params **d_p  ,real **d_w, real **d_wmod,   real **d_gmpiw0, real **d_gmpiwmod0,   real **d_gmpiw1, real **d_gmpiwmod1,   real **d_gmpiw2, real **d_gmpiwmod2, int order, int idir)
+extern "C" int cucopywfrommpiw(struct params **p,real **w, real **wmod,    real **gmpiw0, real **gmpiwmod0,    real **gmpiw1, real **gmpiwmod1,    real **gmpiw2, real **gmpiwmod2, struct params **d_p  ,real **d_w, real **d_wmod,   real **d_gmpiw0, real **d_gmpiwmod0,   real **d_gmpiw1, real **d_gmpiwmod1,   real **d_gmpiw2, real **d_gmpiwmod2, int order, int idir)
 {
        int i1,i2,i3;
      int ii[NDIM];
@@ -3807,7 +3807,7 @@ if(idir==2)
      cudaThreadSynchronize();
 }
 
-int cucopywmodfrommpiw(struct params **p,real **w, real **wmod,    real **gmpiw0, real **gmpiwmod0,    real **gmpiw1, real **gmpiwmod1,    real **gmpiw2, real **gmpiwmod2, struct params **d_p  ,real **d_w, real **d_wmod,   real **d_gmpiw0, real **d_gmpiwmod0,   real **d_gmpiw1, real **d_gmpiwmod1,   real **d_gmpiw2, real **d_gmpiwmod2, int order, int idir)
+extern "C" int cucopywmodfrommpiw(struct params **p,real **w, real **wmod,    real **gmpiw0, real **gmpiwmod0,    real **gmpiw1, real **gmpiwmod1,    real **gmpiw2, real **gmpiwmod2, struct params **d_p  ,real **d_w, real **d_wmod,   real **d_gmpiw0, real **d_gmpiwmod0,   real **d_gmpiw1, real **d_gmpiwmod1,   real **d_gmpiw2, real **d_gmpiwmod2, int order, int idir)
 {
        int i1,i2,i3;
      int ii[NDIM];
@@ -3914,7 +3914,7 @@ if(idir==2)
 
 
 //copy mpi recv buffer to gpu memory     
-int cucopywdfrommpiwd(struct params **p,real **wd,     real **gmpiw0,     real **gmpiw1,     real **gmpiw2,  struct params **d_p  ,real **d_wd,    real **d_gmpiw0,   real **d_gmpiw1,   real **d_gmpiw2,  int order, int idir)
+extern "C" int cucopywdfrommpiwd(struct params **p,real **wd,     real **gmpiw0,     real **gmpiw1,     real **gmpiw2,  struct params **d_p  ,real **d_wd,    real **d_gmpiw0,   real **d_gmpiw1,   real **d_gmpiw2,  int order, int idir)
 {
        int i1,i2,i3;
      int ii[NDIM];
@@ -3974,7 +3974,7 @@ int cucopywdfrommpiwd(struct params **p,real **wd,     real **gmpiw0,     real *
 
 //copy gpu memory data to mpi send buffer for w and wmod
 //just update the edges of w and wmod with values copied from gmpiw, gmpiwmod and gmpivisc
-int cucopytompivisc(struct params **p,real **temp2, real **gmpivisc0, real **gmpivisc1, real **gmpivisc2,  struct params **d_p,real **d_wtemp2,    real **d_gmpivisc0,    real **d_gmpivisc1,    real **d_gmpivisc2)
+extern "C" int cucopytompivisc(struct params **p,real **temp2, real **gmpivisc0, real **gmpivisc1, real **gmpivisc2,  struct params **d_p,real **d_wtemp2,    real **d_gmpivisc0,    real **d_gmpivisc1,    real **d_gmpivisc2)
 {
 
 
@@ -4083,7 +4083,7 @@ int cucopytompivisc(struct params **p,real **temp2, real **gmpivisc0, real **gmp
 }
 
 //copy mpi recv buffer to gpu memory     
-int cucopyfrommpivisc(struct params **p,real **temp2,real **gmpivisc0,real **gmpivisc1,real **gmpivisc2,  struct params **d_p,real **d_wtemp2,    real **d_gmpivisc0,    real **d_gmpivisc1,    real **d_gmpivisc2)
+extern "C" int cucopyfrommpivisc(struct params **p,real **temp2,real **gmpivisc0,real **gmpivisc1,real **gmpivisc2,  struct params **d_p,real **d_wtemp2,    real **d_gmpivisc0,    real **d_gmpivisc1,    real **d_gmpivisc2)
 {
       int dim,bound,var=0;
      int i1,i2,i3;      

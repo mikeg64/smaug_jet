@@ -1,21 +1,33 @@
 
 
 
-int ngi=2;
-int ngj=2;
-int ngk=2;
+
+
+
+
+
+
+
+
+
+
+
+ngi=2;
+ngj=2;
+ngk=2;
+
 
 //Domain definition
 // Define the x domain
 #ifdef USE_SAC
 //vac ozt
-int ni;
-ni=252;    //OZT tests
-ni=ni+2*ngi;
+//int ni;
+ni=252+2*ngi;    //OZT tests
+//ni+=2*ngi;
 //ni=512;
 //real xmax = 6.2831853;  
-real xmax=1.0;
-real dx = xmax/(ni);
+xmax=1.0;
+dx = xmax/(ni);
 #endif
 
 
@@ -23,39 +35,22 @@ real dx = xmax/(ni);
 // Define the y domain
 #ifdef USE_SAC
 //vac ozt
-int nj = 252;  //OZT tests
+nj = 252+2*ngj;  //OZT tests
 //int nj=2;  //BW test
-nj=nj+2*ngj;
+//nj+=2*ngj;
 //nj=512;
 //real ymax = 6.2831853; 
-real ymax = 1.0;   
-real dy = ymax/(nj);    
+ymax = 1.0;   
+dy = ymax/(nj);    
 //nj=41;
 #endif
 
 
 
 
-real cmax[NDIM];
-real courantmax;                
-char configfile[300];
-int nt;
-
-struct params *d_p;
-struct params *p=(struct params *)malloc(sizeof(struct params));
-
-struct state *d_state;
-struct state *state=(struct state *)malloc(sizeof(struct state));
 
 
   
-real *x=(real *)calloc(ni,sizeof(real));
-for(i=0;i<ni;i++)
-		x[i]=i*dx;
-
-real *y=(real *)calloc(nj,sizeof(real));
-for(i=0;i<nj;i++)
-		y[i]=i*dy;
 
 
 
@@ -187,47 +182,22 @@ p->pnpe[2]=1;
 #endif
 
 
-iome elist;
-meta meta;
-
-//set boundary types
-for(int ii=0; ii<NVAR; ii++)
-for(int idir=0; idir<NDIM; idir++)
-for(int ibound=0; ibound<2; ibound++)
-{
-   (p->boundtype[ii][idir][ibound])=0;  //period=0 mpi=1 mpiperiod=2  cont=3 contcd4=4 fixed=5 symm=6 asymm=7
-}
+//iome elist;
+//meta meta;
 
 
 
 
 
 
-elist.server=(char *)calloc(500,sizeof(char));
+
+//elist.server=(char *)calloc(500,sizeof(char));
 
 
-meta.directory=(char *)calloc(500,sizeof(char));
-meta.author=(char *)calloc(500,sizeof(char));
-meta.sdate=(char *)calloc(500,sizeof(char));
-meta.platform=(char *)calloc(500,sizeof(char));
-meta.desc=(char *)calloc(500,sizeof(char));
-meta.name=(char *)calloc(500,sizeof(char));
-meta.ini_file=(char *)calloc(500,sizeof(char));
-meta.log_file=(char *)calloc(500,sizeof(char));
-meta.out_file=(char *)calloc(500,sizeof(char));
 
-strcpy(meta.directory,"out");
-strcpy(meta.author,"MikeG");
-strcpy(meta.sdate,"Nov 2009");
-strcpy(meta.platform,"swat");
-strcpy(meta.desc,"A simple test of SAAS");
-strcpy(meta.name,"test1");
-strcpy(meta.ini_file,"test1.ini");
-strcpy(meta.log_file,"test1.log");
-strcpy(meta.out_file,"test1.out");
 
-	strcpy(elist.server,"localhost1");
-	elist.port=80801;
-	elist.id=0;
+	//strcpy(elist.server,"localhost1");
+	//elist.port=80801;
+	//elist.id=0;
 
 

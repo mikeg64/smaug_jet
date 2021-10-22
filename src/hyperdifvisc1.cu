@@ -1,5 +1,5 @@
 #include "../include/cudapars.h"
-#include "../include/paramssteeringtest1.h"
+//#include "../include/paramssteeringtest1.h"
 
 /////////////////////////////////////
 // standard imports
@@ -1079,7 +1079,7 @@ void checkErrors_hdv1(char *label)
 
 
 
-int cuhyperdifvisc1(struct params **p,  struct params **d_p,   real **d_wmod,  real **d_wd, int order, real **d_wtemp, real **d_wtemp1, real **d_wtemp2, int field, int dim,int hand)
+extern "C" int cuhyperdifvisc1(struct params **p,  struct params **d_p,   real **d_wmod,  real **d_wd, int order, real **d_wtemp, real **d_wtemp1, real **d_wtemp2, int field, int dim,int hand)
 {
 
   int dimp=(((*p)->n[0]))*(((*p)->n[1]));

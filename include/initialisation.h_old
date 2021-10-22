@@ -1,0 +1,12 @@
+
+//#include "iohyperdif.h"
+
+#include "iotypes.h"
+#include <stdio.h>
+#include "initialisation_user.h"
+
+//int encode3_in(struct params *dp,int ix, int iy, int iz, int field);
+void initconfig(struct params *k, struct meta *md, real *w, real *wd);
+
+
+

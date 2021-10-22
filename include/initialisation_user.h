@@ -3,7 +3,7 @@
 #include <string.h>
 #include <math.h>
 
-int encode3_uin(params *dp,int ix, int iy, int iz, int field) {
+int encode3_uin(struct params *dp,int ix, int iy, int iz, int field) {
 
 
   #ifdef USE_SAC_3D

@@ -1,6 +1,6 @@
 #include "../include/cudapars.h"
-#include "../include/iotypes.h"
-#include "../include/iobparams.h"
+//#include "../include/iotypes.h"
+//#include "../include/iobparams.h"
 /////////////////////////////////////
 // standard imports
 /////////////////////////////////////
@@ -162,7 +162,7 @@ void checkErrors_adv(char *label)
 
 
 
-int cuadvance(struct params **p, struct params **d_p,  real **d_wmod, real **d_w,  int order)
+extern "C" int cuadvance(struct params **p, struct params **d_p,  real **d_wmod, real **d_w,  int order)
 {
 
  dim3 dimBlock(dimblock, 1);

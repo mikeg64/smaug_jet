@@ -1,5 +1,5 @@
 #include "../include/cudapars.h"
-#include "../include/paramssteeringtest1.h"
+//#include "../include/paramssteeringtest1.h"
 
 /////////////////////////////////////
 // standard imports
@@ -335,7 +335,7 @@ void checkErrors_db(char *label)
   }
 }
 
-int cudivb(struct params **p, struct params **d_p, real **d_w,  real **d_wmod, real **d_dwn1, real **d_wd,  int order,int ordero, real dt)
+extern "C" int cudivb(struct params **p, struct params **d_p, real **d_w,  real **d_wmod, real **d_dwn1, real **d_wd,  int order,int ordero, real dt)
 {
     int status=0;
     dim3 dimBlock(dimblock, 1);

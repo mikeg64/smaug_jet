@@ -1,5 +1,5 @@
 #include "../include/cudapars.h"
-#include "../include/paramssteeringtest1.h"
+//#include "../include/paramssteeringtest1.h"
 
 /////////////////////////////////////
 // standard imports
@@ -620,7 +620,7 @@ void checkErrors_nshk(char *label)
 
 
 
-int cunushk1(struct params **p,  struct params **d_p,   real **d_wmod,  real **d_wd, int order, real **d_wtemp, real **d_wtemp1, real **d_wtemp2)
+extern "C" int cunushk1(struct params **p,  struct params **d_p,   real **d_wmod,  real **d_wd, int order, real **d_wtemp, real **d_wtemp1, real **d_wtemp2)
 {
 
   int dimp=(((*p)->n[0]))*(((*p)->n[1]));
@@ -655,7 +655,7 @@ int cunushk1(struct params **p,  struct params **d_p,   real **d_wmod,  real **d
 
 }
 
-int cugetdtvisc1(struct params **p,  struct params **d_p,   real **d_wmod,  real **wd, real **d_wd, int order, real **d_wtemp, real **d_wtemp1, real **d_wtemp2)
+extern "C" int cugetdtvisc1(struct params **p,  struct params **d_p,   real **d_wmod,  real **wd, real **d_wd, int order, real **d_wtemp, real **d_wtemp1, real **d_wtemp2)
 {
 
   int dimp=(((*p)->n[0]))*(((*p)->n[1]));

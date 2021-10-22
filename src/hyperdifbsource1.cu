@@ -1,6 +1,6 @@
 #include "../include/cudapars.h"
-#include "../include/paramssteeringtest1.h"
-#include "../include/iobparams.h"
+//#include "../include/paramssteeringtest1.h"
+//#include "../include/iobparams.h"
 /////////////////////////////////////
 // standard imports
 /////////////////////////////////////
@@ -417,7 +417,7 @@ void checkErrors_hdb1(char *label)
 
 
 
-int cuhyperdifbsource1(struct params **p,  struct params **d_p,   real **d_wmod, real **d_dwn1, real **d_wd, int order,int ordero, real **d_wtemp, int field, int dim, int jj, int ii0,int mm,real sb, real dt)
+extern "C" int cuhyperdifbsource1(struct params **p,  struct params **d_p,   real **d_wmod, real **d_dwn1, real **d_wd, int order,int ordero, real **d_wtemp, int field, int dim, int jj, int ii0,int mm,real sb, real dt)
 {
   int dimp=(((*p)->n[0]))*(((*p)->n[1]));
 

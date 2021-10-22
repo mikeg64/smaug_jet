@@ -175,7 +175,7 @@ void checkErrors_advect(char *label)
 
 
 
-int cuadvect(struct params **p, real **w, real **wnew, struct params **d_p, real **d_w, real **d_wnew, real **d_wmod, real **d_dwn1, real **d_wd, int order)
+extern "C" int cuadvect(struct params **p, real **w, real **wnew, struct params **d_p, real **d_w, real **d_wnew, real **d_wmod, real **d_dwn1, real **d_wd, int order)
 {
 
 

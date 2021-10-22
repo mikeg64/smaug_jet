@@ -1,6 +1,6 @@
 #include "../include/cudapars.h"
-#include "../include/paramssteeringtest1.h"
-#include "../include/iobparams.h"
+//#include "../include/paramssteeringtest1.h"
+//#include "../include/iobparams.h"
 /////////////////////////////////////
 // standard imports
 /////////////////////////////////////
@@ -1300,7 +1300,7 @@ void checkErrors_hdv1r(char *label)
 
 
 
-int cuhyperdifvisc1r(struct params **p,  struct params **d_p,   real **d_wmod,real **wd,  real **d_wd, int order, real **d_wtemp, real **d_wtemp1, real **d_wtemp2, int field, int dim)
+extern "C" int cuhyperdifvisc1r(struct params **p,  struct params **d_p,   real **d_wmod,real **wd,  real **d_wd, int order, real **d_wtemp, real **d_wtemp1, real **d_wtemp2, int field, int dim)
 {
   int dimp=(((*p)->n[0]))*(((*p)->n[1]));
      double *d_cmax;
@@ -1412,7 +1412,7 @@ numBlocks = (ndimp+NTPB-1) / NTPB;
   //  printf("field right hdmean hdmax %d %8.8g %8.8g \n",field, (*p)->hdmean, (*p)->hdmax);
 }
 
-int cuhyperdifvisc1ir(struct params **p,  struct params **d_p,   real **d_wmod,  real **d_wd, int order, real **d_wtemp, real **d_wtemp1, real **d_wtemp2, int field, int dim)
+extern "C" int cuhyperdifvisc1ir(struct params **p,  struct params **d_p,   real **d_wmod,  real **d_wd, int order, real **d_wtemp, real **d_wtemp1, real **d_wtemp2, int field, int dim)
 {
 
   int dimp=(((*p)->n[0]))*(((*p)->n[1]));

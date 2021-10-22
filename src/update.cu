@@ -1,5 +1,5 @@
 #include "../include/cudapars.h"
-#include "../include/paramssteeringtest1.h"
+//#include "../include/paramssteeringtest1.h"
 
 /////////////////////////////////////
 // standard imports
@@ -233,7 +233,7 @@ cudaMemcpy(*d_p, *p, sizeof(struct params), cudaMemcpyHostToDevice);
 }
 
 
-int cuupdatehostwd(struct params **p, real **wd, real **wmod,real **wtemp2, struct state **state,struct params **d_p, real **d_wd, real **d_wmod, real ** d_wtemp2, struct state **d_state, int step)
+extern "C" int cuupdatehostwd(struct params **p, real **wd, real **wmod,real **wtemp2, struct state **state,struct params **d_p, real **d_wd, real **d_wmod, real ** d_wtemp2, struct state **d_state, int step)
 //int cuupdate(struct params **p, real **w, real **wmod, real **wd, real **temp2, struct state **state,
 //             struct params **d_p, real **d_w, real **d_wmod, real **d_wtemp2, struct state **d_state, int step)
 {
@@ -362,7 +362,7 @@ if(((*p)->ipe)==3)
 
 
 
-int cuupdatedevicewd(struct params **p, real **wd, real **wmod,real **wtemp2, struct state **state,struct params **d_p, real **d_wd, real **d_wmod, real ** d_wtemp2, struct state **d_state, int step)
+extern "C" int cuupdatedevicewd(struct params **p, real **wd, real **wmod,real **wtemp2, struct state **state,struct params **d_p, real **d_wd, real **d_wmod, real ** d_wtemp2, struct state **d_state, int step)
 //int cuupdate(struct params **p, real **w, real **wmod, real **wd, real **temp2, struct state **state,
 //             struct params **d_p, real **d_w, real **d_wmod, real **d_wtemp2, struct state **d_state, int step)
 {
@@ -471,7 +471,7 @@ cudaMemcpy(*d_p, *p, sizeof(struct params), cudaMemcpyHostToDevice);
 
 
 
-int cufinish(struct params **p, real **w, real **wnew, struct state **state, struct params **d_p,struct bparams **d_bp, real **d_w, real **d_wnew, real **d_wmod, real **d_dwn1, real **d_wd, struct state **d_state, real **d_wtemp, real **d_wtemp1, real **d_wtemp2)
+extern "C" int cufinish(struct params **p, real **w, real **wnew, struct state **state, struct params **d_p,struct bparams **d_bp, real **d_w, real **d_wnew, real **d_wmod, real **d_dwn1, real **d_wd, struct state **d_state, real **d_wtemp, real **d_wtemp1, real **d_wtemp2)
 {
   
 
@@ -505,7 +505,7 @@ int cufinish(struct params **p, real **w, real **wnew, struct state **state, str
 
   #ifdef USE_MPI
 
-int cufinishmgpu(struct params **p,real **w, real **wmod, real **temp2, real **gmpivisc0, real **gmpivisc1, real **gmpivisc2,   real **gmpiw0, real **gmpiwmod0,   real **gmpiw1, real **gmpiwmod1,   real **gmpiw2, real **gmpiwmod2, struct params **d_p,   real **d_w, real **d_wmod,real **d_wtemp2,    real **d_gmpivisc0,    real **d_gmpivisc1,    real **d_gmpivisc2,   real **d_gmpiw0, real **d_gmpiwmod0,   real **d_gmpiw1, real **d_gmpiwmod1,   real **d_gmpiw2, real **d_gmpiwmod2)
+extern "C" int cufinishmgpu(struct params **p,real **w, real **wmod, real **temp2, real **gmpivisc0, real **gmpivisc1, real **gmpivisc2,   real **gmpiw0, real **gmpiwmod0,   real **gmpiw1, real **gmpiwmod1,   real **gmpiw2, real **gmpiwmod2, struct params **d_p,   real **d_w, real **d_wmod,real **d_wtemp2,    real **d_gmpivisc0,    real **d_gmpivisc1,    real **d_gmpivisc2,   real **d_gmpiw0, real **d_gmpiwmod0,   real **d_gmpiw1, real **d_gmpiwmod1,   real **d_gmpiw2, real **d_gmpiwmod2)
 {
   
 

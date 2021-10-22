@@ -1,6 +1,6 @@
 #include "../include/cudapars.h"
-#include "../include/paramssteeringtest1.h"
-#include "../include/iobparams.h"
+//#include "../include/paramssteeringtest1.h"
+//#include "../include/iobparams.h"
 /////////////////////////////////////
 // standard imports
 /////////////////////////////////////
@@ -816,7 +816,7 @@ void checkErrors_cd1(char *label)
   }
 }
 
-int cucentdiff1(struct params **p, struct params **d_p,struct state **d_s, real **d_w,  real **d_wmod, real **d_dwn1, real **d_wd, int order, int ordero, real dt, int field, int dir)
+extern "C" int cucentdiff1(struct params **p, struct params **d_p,struct state **d_s, real **d_w,  real **d_wmod, real **d_dwn1, real **d_wd, int order, int ordero, real dt, int field, int dir)
 {
  int dimp=(((*p)->n[0]))*(((*p)->n[1]));
 

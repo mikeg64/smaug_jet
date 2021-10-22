@@ -1134,7 +1134,7 @@ int shift=order*NVAR*dimp;
 }
 
 
-int cuboundary(struct params **p, struct bparams **bp,struct params **d_p, struct bparams **d_bp, struct state **d_s,  real **d_wmod,  int order,int idir,int field)
+extern "C" int cuboundary(struct params **p, struct bparams **bp,struct params **d_p, struct bparams **d_bp, struct state **d_s,  real **d_wmod,  int order,int idir,int field)
 {
 
 
@@ -1278,7 +1278,7 @@ if(idir==2)
 
 
 
-int cuboundary1(struct params **p, struct bparams **bp,struct params **d_p, struct bparams **d_bp, struct state **d_s,  real **d_wmod,  int order,int idir,int field)
+extern "C" int cuboundary1(struct params **p, struct bparams **bp,struct params **d_p, struct bparams **d_bp, struct state **d_s,  real **d_wmod,  int order,int idir,int field)
 {
 
 
@@ -1442,7 +1442,7 @@ if(idir==2)
 
 
 
-int cuboundary2(struct params **p, struct bparams **bp,struct params **d_p, struct bparams **d_bp, struct state **d_s,  real **d_wmod,  int order,int idir,int field)
+extern "C" int cuboundary2(struct params **p, struct bparams **bp,struct params **d_p, struct bparams **d_bp, struct state **d_s,  real **d_wmod,  int order,int idir,int field)
 {
 
 

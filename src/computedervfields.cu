@@ -2,8 +2,8 @@
 
 
 #include "../include/cudapars.h"
-#include "../include/paramssteeringtest1.h"
-#include "../include/iobparams.h"
+//#include "../include/paramssteeringtest1.h"
+//#include "../include/iobparams.h"
 /////////////////////////////////////
 // standard imports
 /////////////////////////////////////
@@ -1797,7 +1797,7 @@ void checkErrors_cdf(char *label)
 
 
 
-int cucomputedervfields(struct params **p,  struct params **d_p, real **d_wmod,  real **d_wd, int order)
+extern "C" int cucomputedervfields(struct params **p,  struct params **d_p, real **d_wmod,  real **d_wd, int order)
 {
   int dimp=(((*p)->n[0]))*(((*p)->n[1]));
 
@@ -1829,7 +1829,7 @@ cudaMemcpy(*d_p, *p, sizeof(struct params), cudaMemcpyHostToDevice);
 
 }
 
-int cucomputevels(struct params **p,  struct params **d_p, real **d_wmod,  real **d_wd, int order, int dir)
+extern "C" int cucomputevels(struct params **p,  struct params **d_p, real **d_wmod,  real **d_wd, int order, int dir)
 {
   int dimp=(((*p)->n[0]))*(((*p)->n[1]));
 
@@ -1861,7 +1861,7 @@ int cucomputevels(struct params **p,  struct params **d_p, real **d_wmod,  real 
 
 }
 
-int cucomputemaxc(struct params **p,  struct params **d_p, real **d_wmod,  real **d_wd, int order, int dir, real **wd, real **d_wtemp)
+extern "C" int cucomputemaxc(struct params **p,  struct params **d_p, real **d_wmod,  real **d_wd, int order, int dir, real **wd, real **d_wtemp)
 {
   int dimp=(((*p)->n[0]))*(((*p)->n[1]));
   
@@ -2051,7 +2051,7 @@ if(((*wd)[i+(cfast*dimp)])>((*p)->cmax))
 
 
 
-int cucomputemaxcourant(struct params **p,  struct params **d_p, real **d_wmod,  real **d_wd, int order, int dir, real **wd, real **d_wtemp)
+extern "C" int cucomputemaxcourant(struct params **p,  struct params **d_p, real **d_wmod,  real **d_wd, int order, int dir, real **wd, real **d_wtemp)
 {
   int dimp=(((*p)->n[0]))*(((*p)->n[1]));
     double *d_cmax;
@@ -2231,7 +2231,7 @@ printf("cmax on cpu %.8f\n",(*p)->cmax);*/
 
 
 
-int cucomputec(struct params **p,  struct params **d_p, real **d_wmod,  real **d_wd, int order, int dir)
+extern "C" int cucomputec(struct params **p,  struct params **d_p, real **d_wmod,  real **d_wd, int order, int dir)
 {
   int dimp=(((*p)->n[0]))*(((*p)->n[1]));
 ////cudaSetDevice(selectedDevice);
@@ -2263,7 +2263,7 @@ int cucomputec(struct params **p,  struct params **d_p, real **d_wmod,  real **d
 
 }
 
-int cucomputept(struct params **p,  struct params **d_p, real **d_wmod,  real **d_wd, int order, int dir)
+extern "C" int cucomputept(struct params **p,  struct params **d_p, real **d_wmod,  real **d_wd, int order, int dir)
 {
 
  int dimp=(((*p)->n[0]))*(((*p)->n[1]));
@@ -2298,7 +2298,7 @@ int cucomputept(struct params **p,  struct params **d_p, real **d_wmod,  real **
 
 }
 
-int cucomputepk(struct params **p,  struct params **d_p, real **d_wmod,  real **d_wd, int order, int dir)
+extern "C" int cucomputepk(struct params **p,  struct params **d_p, real **d_wmod,  real **d_wd, int order, int dir)
 {
 
  int dimp=(((*p)->n[0]))*(((*p)->n[1]));
@@ -2332,7 +2332,7 @@ int cucomputepk(struct params **p,  struct params **d_p, real **d_wmod,  real **
 }
 
 
-int cucomputepbg(struct params **p,  struct params **d_p, real **d_wmod,  real **d_wd, int order, int dir)
+extern "C" int cucomputepbg(struct params **p,  struct params **d_p, real **d_wmod,  real **d_wd, int order, int dir)
 {
 
  int dimp=(((*p)->n[0]))*(((*p)->n[1]));
