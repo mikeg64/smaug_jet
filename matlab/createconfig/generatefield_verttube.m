@@ -23,11 +23,12 @@ if strcmp(mode,'vertfieldtube')
     nb=1;
     mb=1;
     
-    nx1=simgridinfo.grid_dimensions(1);
-    nx3=simgridinfo.grid_dimensions(2);
+    %swap y and x directions
+    nx3=simgridinfo.grid_dimensions(1);
+    nx1=simgridinfo.grid_dimensions(2);
     
-    dx=(simparams.domain_left_edge(1)-simparams.domain_right_edge(1))/simgridinfo.grid_dimensions(1);
-    dz=(simparams.domain_left_edge(2)-simparams.domain_right_edge(2))/simgridinfo.grid_dimensions(2);
+    dz=-(simparams.domain_left_edge(1)-simparams.domain_right_edge(1))/simgridinfo.grid_dimensions(1);
+    dx=-(simparams.domain_left_edge(2)-simparams.domain_right_edge(2))/simgridinfo.grid_dimensions(2);
 
     bx=zeros(nx1,nx3);
     bz=zeros(nx1,nx3);
@@ -42,13 +43,13 @@ Bmin=0.0002  ; %mag field Tesla
 
  b0zz=Bmax;   
     d_z=1.5; % width of Gaussian in Mm
-    z_shift= 4.0e6; % shift in Mm
+    z_shift= 0.0e6; % shift in Mm
     %archshift=1.0e6;
     archshift=0.0;
     archlength=8.0e6;
     A=0.45; % amplitude
     scale=1.0e6;
-    barch0=0.05;
+    barch0=0.0;  %0.05;
     b0z_top=0.08;
     l=4e6; %length of arcade
    
@@ -86,7 +87,7 @@ A=R2/2;
         b0z(i)=par4((x(i)/scale-z_shift),d_z,A);
     end
     
-    %dyb=(simparams.domain_right_edge(2)-simparams.domain_left_edge(2))/nb;
+    dzb=(simparams.domain_right_edge(1)-simparams.domain_left_edge(1))/nb;
     %dzb=(simparams.domain_right_edge(3)-simparams.domain_left_edge(3))/mb;
     
     
@@ -111,7 +112,7 @@ A=R2/2;
   xold=x;
   %yold=y;
   zold=z;
-  z=zold;  
+  %z=zold;  
     
  ib=0;
  jb=0;
@@ -136,11 +137,12 @@ A=R2/2;
           %  end
             
   
-          %  z=zold-max(z)/2.d0;
+            z=zold-(max(z))/2.d0+3*d_z;
           %  y=yold-max(y)/2.d0;
 
             
-            %z=zold-((jb-1)*dzb/2)-dzb;
+           % z=zold-((jb-1)*dzb/2)-dzb;
+           %z=zold+2*d_z-(dzb)/2;
             %y=yold-((ib-1)*dyb/2)-dyb;           
             
             
@@ -183,8 +185,8 @@ bx(i,k)=bx(i,k);
 
 l=archlength;
 %expressions for arcade
-bz(i,k)=bz(i,k)+b0zz*barch0*cos(pi*(x(i)-archshift)/(l))*exp(-pi*z(k)/(l));
-bx(i,k)=bx(i,k)-b0zz*barch0*sin(pi*(x(i)-archshift)/(l))*exp(-pi*z(k)/(l));
+ bz(i,k)=bz(i,k)+barch0*cos(pi*(x(i)-archshift)/(l))*exp(-pi*z(k)/(l));
+ bx(i,k)=bx(i,k)+barch0*sin(pi*(x(i)-archshift)/(l))*exp(-pi*z(k)/(l));
 
 
 
@@ -446,8 +448,10 @@ end
 rho1=(dbxbzdz-bxdbzdx-bxdbzdz+dpdz)./ggg;
 %rho1=(dbxbzdz-dbxbzdx-  dbybzdy+dpdz)./ggg;
 
-rho1=simdata.w(:,:,1)+rho1+simdata.w(:,:,10);
-p=Bvari+simdata.w(:,:,5)*(gamma-1.0);
+%note the use of transpose operation because we swapped the vertical and x
+%directions
+rho1=(simdata.w(:,:,1))'+rho1+(simdata.w(:,:,10))';
+p=Bvari+(simdata.w(:,:,5))'*(gamma-1.0);
 
 
 %lower boundary
@@ -474,10 +478,10 @@ for ix_1=nx1-2:nx1-1
 end
 
 %update the background energy and magnetic fields
-simdata.w(:,:,10)=rho1;
-simdata.w(:,:,9)=p./((gamma-1.0))+0.5*(bx.*bx+bz.*bz);
-simdata.w(:,:,11)=bx;
-simdata.w(:,:,12)=bz;
+simdata.w(:,:,10)=rho1';
+simdata.w(:,:,9)=(p./((gamma-1.0))+0.5*(bx.*bx+bz.*bz))';
+simdata.w(:,:,11)=bx';
+simdata.w(:,:,12)=bz';
 
 
 end %if vert tube loop
