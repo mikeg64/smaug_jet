@@ -137,7 +137,7 @@ A=R2/2;
           %  end
             
   
-            z=zold-(max(z))/2.d0+3*d_z;
+            z=zold-(max(z)+(dzb/nx3))/2.d0;
           %  y=yold-max(y)/2.d0;
 
             
@@ -396,7 +396,7 @@ disp(  i);
 %************* END INTEGRATION ****************************
 
 %Bvari=((Bvarix+Bvariy)/2)-(bz.^2)/2;
-Bvari=((Bvarix))-bb;
+Bvari=((Bvarix)/2)-(bz.^2)/2;
 %Bvari=Bvarix;
 
 
@@ -450,8 +450,8 @@ rho1=(dbxbzdz-bxdbzdx-bxdbzdz+dpdz)./ggg;
 
 %note the use of transpose operation because we swapped the vertical and x
 %directions
-rho1=(simdata.w(:,:,1))'+rho1+(simdata.w(:,:,10))';
-p=Bvari+(simdata.w(:,:,5))'*(gamma-1.0);
+rho1=(simdata.w(:,:,1))'+rho1+(simdata.w(:,:,8))';
+p=Bvari+(simdata.w(:,:,7))'*(gamma-1.0);
 
 
 %lower boundary
@@ -477,11 +477,21 @@ for ix_1=nx1-2:nx1-1
    %end
 end
 
+minp=min(min(p));
+for k=1:nx3 
+for i=1:nx1
+   if p(i,k)<0
+       p(i,k)=p(i,k)+1.01*abs(p(i,k));
+   end
+    
+end
+end
+
 %update the background energy and magnetic fields
-simdata.w(:,:,10)=rho1';
-simdata.w(:,:,9)=(p./((gamma-1.0))+0.5*(bx.*bx+bz.*bz))';
-simdata.w(:,:,11)=bx';
-simdata.w(:,:,12)=bz';
+simdata.w(:,:,8)=rho1';
+simdata.w(:,:,7)=(p./((gamma-1.0))+0.5*(bx.*bx+bz.*bz))';
+simdata.w(:,:,9)=bx';
+simdata.w(:,:,10)=bz';
 
 
 end %if vert tube loop
