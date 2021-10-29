@@ -226,13 +226,13 @@ R=8.31e3;
 % 
 % ! 1.6Mm
 % 
-% !iniene=6840.d0*8.31e3*(2.3409724e-09)/0.6d0/(eqpar(gamma_)-1.0)
+iniene=6840.d0*8.31e3*(2.3409724e-09)/0.6d0/(consts.fgamma-1.0);
 %iniene=(6840.d0+800)*R*(2.3409724e-09)/mu/(consts.fgamma-1.0);
 
 % 
 % !iniene=6840.d0*8.31e3*(2.2139002e-09)/0.6d0/(eqpar(gamma_)-1.0)
 % 
-iniene=731191.34d0*8.31e3*(4.5335481e-12)/0.6d0/((consts.fgamma)-1.0);
+%iniene=731191.34d0*8.31e3*(4.5335481e-12)/0.6d0/((consts.fgamma)-1.0);
 
 
 %inix and inirho read from height versus density dta from valiiic mcwhirter

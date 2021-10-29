@@ -23,6 +23,8 @@ if strcmp(mode,'vertfieldtube')
     nb=1;
     mb=1;
     
+    p0=5226.1d0; %read the pressure from the valIIc data file corresponding to minimum height of the mode
+    
     %swap y and x directions
     nx3=simgridinfo.grid_dimensions(1);
     nx1=simgridinfo.grid_dimensions(2);
@@ -396,7 +398,7 @@ disp(  i);
 %************* END INTEGRATION ****************************
 
 %Bvari=((Bvarix+Bvariy)/2)-(bz.^2)/2;
-Bvari=((Bvarix)/2)-(bz.^2)/2;
+Bvari=((Bvarix))-(bz.^2)/2;
 %Bvari=Bvarix;
 
 
@@ -451,7 +453,7 @@ rho1=(dbxbzdz-bxdbzdx-bxdbzdz+dpdz)./ggg;
 %note the use of transpose operation because we swapped the vertical and x
 %directions
 rho1=(simdata.w(:,:,1))'+rho1+(simdata.w(:,:,8))';
-p=Bvari+(simdata.w(:,:,7))'*(gamma-1.0);
+p=p0+Bvari+(simdata.w(:,:,7))'*(gamma-1.0);
 
 
 %lower boundary
@@ -477,19 +479,21 @@ for ix_1=nx1-2:nx1-1
    %end
 end
 
-minp=min(min(p));
-for k=1:nx3 
-for i=1:nx1
-   if p() 
-    
-end
-end
+% minp=min(min(p));
+% for k=1:nx3 
+% for i=1:nx1
+%    if p(i,k)<0
+%        p(i,k)=p(i,k)+1.01*abs(p(i,k));
+%    end
+%     
+% end
+% end
 
 %update the background energy and magnetic fields
 simdata.w(:,:,8)=rho1';
 simdata.w(:,:,7)=(p./((gamma-1.0))+0.5*(bx.*bx+bz.*bz))';
-simdata.w(:,:,9)=bz';
-simdata.w(:,:,10)=bx';
+simdata.w(:,:,9)=bx';
+simdata.w(:,:,10)=bz';
 
 
 end %if vert tube loop
