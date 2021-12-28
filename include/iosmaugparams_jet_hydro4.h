@@ -72,13 +72,15 @@ int finishsteering=0;
 
 //char *cfgfile="zero1_np020203.ini";
 //char *cfgfile="zero1_np0201.ini";
-char *cfgfile="configs/2D_2048_1024_8_8_asc.ini"; 
+//char *cfgfile="configs/2D_2048_1024_8_8_130G_asc.ini"; 
+
+//char *cfgfile="configs/2D_2048_1024_8_8_asc.ini";
 //original
-//char *cfgfile="/nobackup/projects/bdshe01/cs1mkg/smaug_jet/hydro2/hydro2_asc_549000.ini";
+char *cfgfile="/nobackup/projects/bdshe07/cs1mkg/jets/hydro4a/hydro4a_asc_1500000.ini";
 //char *cfgfile="configs/zero1_ot_asc_256.ini";
 //char *cfgfile="zero1_BW_bin.ini";
 //char *cfgout="zero1_np010203."
-char *cfgout="/nobackup/projects/bdshe01/cs1mkg/smaug_jet/hydro4/hydro4";
+char *cfgout="/nobackup/projects/bdshe07/cs1mkg/jets/hydro4a/hydro4a";
 //char *cfgout="zero1_np0201.out";
 
 
@@ -87,8 +89,8 @@ char *cfgout="/nobackup/projects/bdshe01/cs1mkg/smaug_jet/hydro4/hydro4";
 
 
 #ifdef USE_SAC
-//dt=0.0002;  //OZT test
-dt=0.001;
+dt=0.0002;  //OZT test
+//dt=0.0001;
 #endif
 
 
@@ -96,7 +98,7 @@ dt=0.001;
 //nt=5000;
 //nt=200000;
 //nt=150000;
-nt=3000000;
+nt=6000000;
 
 
 real *t=(real *)calloc(nt,sizeof(real));
@@ -120,11 +122,11 @@ p->dx[0]=dx;
 p->dx[1]=dy;
 
 
-p->qt=0.0;
-p->it=0;
+//p->qt=0.0;
+//p->it=0;
 
-//p->qt=549.0;
-//p->it=549001;
+p->qt=300.0002;
+p->it=1500001;
 
 
 
@@ -160,6 +162,7 @@ p->divbfix=0.0;
 p->hyperdifmom=1.0;
 p->readini=1.0;
 //p->cfgsavefrequency=1000;
+//p->cfgsavefrequency=2000;
 p->cfgsavefrequency=2000;
 
 
@@ -180,12 +183,12 @@ for(i=0;i<NVAR;i++)
   p->chyp[i]=0.0;
 
 p->chyp[rho]=0.2;
-p->chyp[energy]=0.2;
-p->chyp[b1]=0.4;
-p->chyp[b2]=0.4;
-p->chyp[mom1]=0.2;
-p->chyp[mom2]=0.2;
-p->chyp[rho]=0.2;
+p->chyp[energy]=0.4;
+p->chyp[b1]=0.5;
+p->chyp[b2]=0.5;
+p->chyp[mom1]=0.4;
+p->chyp[mom2]=0.4;
+p->chyp[rho]=0.4;
 
 p->npe=1;
 

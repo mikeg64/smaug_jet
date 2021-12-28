@@ -1,4 +1,4 @@
-newfilename='2D_2048_1024_8_8_asc.ini';
+newfilename='2D_2048_1024_8_8_130G_asc.ini';
 
 % 4Mmx12.5Mm
 %extrapolating atmospheric model to greater than 6Mm
@@ -8,7 +8,7 @@ simparams=sim_params;
 simgridinfo=sim_gridinfo;
 simdata=sim_data;
 
-simparams.unique_identifier="2dhydro 2048x1024";
+simparams.unique_identifier="2dhydro 2048x1024 130G";
 
 consts.mu=0.6e0; %magnetic permeability
 consts.R=8.31e3

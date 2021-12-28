@@ -24,6 +24,7 @@ if strcmp(mode,'vertfieldtube')
     mb=1;
     
     p0=5226.1d0; %read the pressure from the valIIc data file corresponding to minimum height of the mode
+    p0=0;
     
     %swap y and x directions
     nx3=simgridinfo.grid_dimensions(1);
@@ -38,12 +39,16 @@ if strcmp(mode,'vertfieldtube')
     
     xf=zeros(nx1,nx3);
     
-Bmax=0.15  ; %mag field Tesla
+%Bmax=0.15  ; %mag field Tesla
+Bmax=0.015;
 %Bmax=0.0003;
 %Bmin=0.0006d0  ; %mag field Tesla
 Bmin=0.0002  ; %mag field Tesla
 
+Bmax=Bmax/40;  %factor 50 worked
+
  b0zz=Bmax;   
+ %b0zz=0;
     d_z=1.5; % width of Gaussian in Mm
     z_shift= 0.0e6; % shift in Mm
     %archshift=1.0e6;
@@ -51,7 +56,7 @@ Bmin=0.0002  ; %mag field Tesla
     archlength=8.0e6;
     A=0.45; % amplitude
     scale=1.0e6;
-    barch0=0.0;  %0.05;
+    barch0=Bmax/80;  %0.05;
     b0z_top=0.08;
     l=4e6; %length of arcade
    
@@ -86,7 +91,10 @@ A=R2/2;
         x(i)=simparams.domain_left_edge(1)+dx*(i-1);
         %b0z(i)=(par4((x(i)/scale-z_shift),d_z,A)).^2;
         %b0z(i)=(par3((x(i)/scale-z_shift),d_z,A));
-        b0z(i)=par4((x(i)/scale-z_shift),d_z,A);
+        b0z(i)=par4((x(i)/scale-z_shift),d_z,A)*tanh(x(i)-x());
+        if i>(nx1/2)
+          b0z(i)=-b0z(i);  
+        end
     end
     
     dzb=(simparams.domain_right_edge(1)-simparams.domain_left_edge(1))/nb;
@@ -190,7 +198,8 @@ l=archlength;
  bz(i,k)=bz(i,k)+barch0*cos(pi*(x(i)-archshift)/(l))*exp(-pi*z(k)/(l));
  bx(i,k)=bx(i,k)+barch0*sin(pi*(x(i)-archshift)/(l))*exp(-pi*z(k)/(l));
 
-
+%bx(i,k)=0;
+%bz(i,k)=Bmax/50;
 
 end
 end  
@@ -490,8 +499,8 @@ end
 % end
 
 %update the background energy and magnetic fields
-simdata.w(:,:,8)=rho1';
-simdata.w(:,:,7)=(p./((gamma-1.0))+0.5*(bx.*bx+bz.*bz))';
+%simdata.w(:,:,8)=rho1';
+%simdata.w(:,:,7)=(p./((gamma-1.0))+0.5*(bx.*bx+bz.*bz))';
 simdata.w(:,:,9)=bx';
 simdata.w(:,:,10)=bz';
 
