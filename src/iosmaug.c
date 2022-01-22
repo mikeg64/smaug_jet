@@ -176,7 +176,7 @@ strcpy(meta.out_file,"test1.out");*/
 
 	#ifdef USE_MULTIGPU
 	#ifdef USE_MPI
-	    // MPI::Init(argc, argv);
+	     MPI_Init(&argc, &argv);
 	#endif
 
 	mgpuinit(p);

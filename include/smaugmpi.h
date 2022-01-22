@@ -121,10 +121,12 @@ void mgpuinit(struct params *p)
      //MPI::Intracomm comm;
      //MPI_Init(&argc, &argv);
 
-     /*gwall_time = MPI_Wtime();
-     comm=MPI::COMM_WORLD;
-     p->npe=comm.Get_size();
-     p->ipe=comm.Get_rank();*/
+     gwall_time = MPI_Wtime();
+     *comm=MPI_COMM_WORLD;
+
+     MPI_Comm_size(MPI_COMM_WORLD, &(p->npe));
+     MPI_Comm_rank(MPI_COMM_WORLD, &(p_->ipe) ) ;
+
 
 #ifdef USE_SAC3D
    if((p->n[0])>=(p->n[1])  && (p->n[0])>=(p->n[2]))
@@ -161,7 +163,7 @@ void mgpuinit(struct params *p)
      
 
 
-     //gmpirequest=(MPI::Request *)calloc(numbuffers,sizeof(MPI::Request));
+     gmpirequest=(MPI_Request *)calloc(numbuffers,sizeof(MPI_Request));
 
      gmpisendbuffer=(real *)calloc(nmpibuffer,sizeof(real));
      gmpirecvbuffer=(real *)calloc(nmpibuffer*numbuffers,sizeof(real));	
@@ -218,7 +220,7 @@ for(i=0;i<NDIM;i++)
                        }     
 }    
      	
-
+MPI_Barrier( MPI_COMM_WORLD);
 //comm.Barrier();
 
 
@@ -240,7 +242,7 @@ void mgpufinalize(struct params *p)
      //free(gmpisendbuffer);
      //free(gmpirecvbuffer);
      //free(gmpirequest);
-     //MPI_Finalize();
+     MPI_Finalize();
 }
 
 
@@ -433,7 +435,10 @@ void mpisend(int nvar,real *var, int *ixmin, int *ixmax  ,int qipe,int iside, in
     int n=0;
    int ivar,i1,i2,i3,bound;
    i3=0;
+   real *dvar;
 
+   #ifndef  USE_GPUDIRECT
+    dvar=&(gmpisendbuffer[n]);
 	switch(dim)
 	{
 		case 0:
@@ -536,15 +541,18 @@ void mpisend(int nvar,real *var, int *ixmin, int *ixmax  ,int qipe,int iside, in
 		break;
 	}
 
-
+#else
+	dvar=var;
+#endif   //USE_GPUDIRECT
 
 
 
 
 //if(p->ipe==1  && dim==0)
 //      printf("ipe %d send tag %d nb %d  to %d %d %d\n",p->ipe,100*((p->ipe)+1)+10*(dim+1)+(iside==0?1:0),n,qipe,iside,dim);
-   
- //  comm.Rsend(gmpisendbuffer, n, MPI_DOUBLE_PRECISION, qipe, 100*((p->ipe)+1)+10*(dim+1)+(iside==0?1:0));
+	//MPI_Rsend(const void *buf, int count, MPI_Datatype datatype, int dest,
+	//    int tag, MPI_Comm comm)
+   MPI_Rsend(dvar, n, MPI_DOUBLE_PRECISION, qipe, 100*((p->ipe)+1)+10*(dim+1)+(iside==0?1:0),MPI_COMM_WORLD);
 
 
 }
@@ -558,6 +566,12 @@ void mpisendmod(int nvar,real *var, int *ixmin, int *ixmax  ,int qipe,int iside,
     int n=0;
    int ivar,i1,i2,i3,bound;
    i3=0;
+
+   real *dvar;
+
+   dvar=&(gmpisendbuffer[n]);
+
+#ifndef USE_GPUDIRECT   //USE_GPUDIRECT
 
 	switch(dim)
 	{
@@ -662,7 +676,9 @@ void mpisendmod(int nvar,real *var, int *ixmin, int *ixmax  ,int qipe,int iside,
 		break;
 	}
 
-
+#else   //USE_GPUDIRECT
+	dvar=var;
+#endif   //USE_GPUDIRECT
 
 
 
@@ -675,6 +691,7 @@ void mpisendmod(int nvar,real *var, int *ixmin, int *ixmax  ,int qipe,int iside,
 }*/
    
  //  comm.Rsend(gmpisendbuffer, n, MPI_DOUBLE_PRECISION, qipe, 100*((p->ipe)+1)+10*(dim+1)+(iside==0?1:0));
+	   MPI_Rsend(dvar, n, MPI_DOUBLE_PRECISION, qipe, 100*((p->ipe)+1)+10*(dim+1)+(iside==0?1:0),MPI_COMM_WORLD);
 
 //if((p->ipe==1  )   )
 //			printf("%d %d %d\n",p->ipe,iside,n);
@@ -696,15 +713,19 @@ void mpisendmod(int nvar,real *var, int *ixmin, int *ixmax  ,int qipe,int iside,
 //integer :: mpistatus(MPI_STATUS_SIZE,2)
 //common /mpirecv/ nmpirequest,mpirequests,mpistatus
 //!----------------------------------------------------------------------------
-void mpirecvbuffer(int nvar,int *ixmin, int *ixmax  ,int qipe,int iside,int dim, struct params *p)
+void mpirecvbuffer(int nvar, real *dvar, int *ixmin, int *ixmax  ,int qipe,int iside,int dim, struct params *p)
 {
 int nrecv;
+//real *dvar;
 /*#ifdef USE_SAC3D
    nrecv = nvar* (ixmax[0]-ixmin[0]+1)*(ixmax[1]-ixmin[1]+1)*(ixmax[2]-ixmin[2]+1);
 #else
    nrecv = nvar* (ixmax[0]-ixmin[0]+1)*(ixmax[1]-ixmin[1]+1);
 #endif*/
 
+
+#ifndef USE_GPUDIRECT
+    dvar=&(gmpirecvbuffer+(2*iside*gnmpibuffer));
 	switch(dim)
 	{
 		case 0:
@@ -727,7 +748,10 @@ int nrecv;
 			#endif
 		break;
 	}
+#else USE_GPUDIRECT
 
+	dvar=var;
+#endif USE_GPUDIRECT
 
 gnmpirequest++;
 //  if((p->ipe)==0  && dim==0)
@@ -735,15 +759,19 @@ gnmpirequest++;
 
 //gmpirequest[gnmpirequest]=comm.Irecv(gmpirecvbuffer+(iside*gnmpibuffer),nrecv,MPI_DOUBLE_PRECISION,qipe,10*(p->ipe)+iside);
 //gmpirequest[gnmpirequest]=comm.Irecv(gmpirecvbuffer+(iside*gnmpibuffer),nrecv,MPI_DOUBLE_PRECISION,qipe,MPI_ANY_TAG);
-//gmpirequest[gnmpirequest]=comm.Irecv(gmpirecvbuffer+(2*iside*gnmpibuffer),nrecv,MPI_DOUBLE_PRECISION,qipe,100*(qipe+1)+10*(dim+1)+iside/**(iside==0?1:0)*/);
+;//gmpirequest[gnmpirequest]=comm.Irecv(gmpirecvbuffer+(2*iside*gnmpibuffer),nrecv,MPI_DOUBLE_PRECISION,qipe,100*(qipe+1)+10*(dim+1)+iside/**(iside==0?1:0)*/);
 //gmpirequest[gnmpirequest]=comm.Irecv(gmpirecvbuffer,nrecv,MPI_DOUBLE_PRECISION,qipe,100*(qipe+1)+10*(dim+1)+iside/**(iside==0?1:0)*/);
+
+//int MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int source, int tag, MPI_Comm comm, MPI_Request *request)
+gmpirequest[gnmpirequest]=MPI_Irecv(dvar,nrecv,MPI_DOUBLE_PRECISION,qipe,100*(qipe+1)+10*(dim+1)+iside/**(iside==0?1:0)*/);
+
 }
 
 
 
 
 
-void mpirecvbuffermod(int nvar,int *ixmin, int *ixmax  ,int qipe,int iside,int dim, struct params *p)
+void mpirecvbuffermod(int nvar,real *dvar, int *ixmin, int *ixmax  ,int qipe,int iside,int dim, struct params *p)
 {
 int nrecv;
 /*#ifdef USE_SAC3D
@@ -751,6 +779,11 @@ int nrecv;
 #else
    nrecv = nvar* (ixmax[0]-ixmin[0]+1)*(ixmax[1]-ixmin[1]+1);
 #endif*/
+
+
+#ifndef USE_GPUDIRECT
+    dvar=&(gmpirecvbuffer+(2*iside*gnmpibuffermod));
+
 
 	switch(dim)
 	{
@@ -776,7 +809,12 @@ int nrecv;
 	}
 
 
-gnmpirequest++;
+
+
+
+#endif USE_GPUDIRECT
+	gnmpirequest++;
+
 //  if((p->ipe)==0  && dim==0)
 //      printf("ipe %d recv tag %d nb %d  to %d  %d %d\n",p->ipe, 100*(qipe+1)+10*(dim+1)+iside/*(iside==0?1:0)*/ ,nrecv,qipe,iside,dim);
 
@@ -784,6 +822,14 @@ gnmpirequest++;
 //gmpirequest[gnmpirequest]=comm.Irecv(gmpirecvbuffer+(iside*gnmpibuffer),nrecv,MPI_DOUBLE_PRECISION,qipe,MPI_ANY_TAG);
 //gmpirequest[gnmpirequest]=comm.Irecv(gmpirecvbuffer+(2*iside*gnmpibuffermod),nrecv,MPI_DOUBLE_PRECISION,qipe,100*(qipe+1)+10*(dim+1)+iside/**(iside==0?1:0)*/);
 //gmpirequest[gnmpirequest]=comm.Irecv(gmpirecvbuffer,nrecv,MPI_DOUBLE_PRECISION,qipe,100*(qipe+1)+10*(dim+1)+iside/**(iside==0?1:0)*/);
+
+
+
+//int MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int source, int tag, MPI_Comm comm, MPI_Request *request)
+gmpirequest[gnmpirequest]=MPI_Irecv(dvar,nrecv,MPI_DOUBLE_PRECISION,qipe,100*(qipe+1)+10*(dim+1)+iside/**(iside==0?1:0)*/);
+
+
+
 }
 
 
