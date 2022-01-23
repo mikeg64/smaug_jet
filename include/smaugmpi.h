@@ -763,7 +763,7 @@ gnmpirequest++;
 //gmpirequest[gnmpirequest]=comm.Irecv(gmpirecvbuffer,nrecv,MPI_DOUBLE_PRECISION,qipe,100*(qipe+1)+10*(dim+1)+iside/**(iside==0?1:0)*/);
 
 //int MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int source, int tag, MPI_Comm comm, MPI_Request *request)
-gmpirequest[gnmpirequest]=MPI_Irecv(dvar,nrecv,MPI_DOUBLE_PRECISION,qipe,100*(qipe+1)+10*(dim+1)+iside/**(iside==0?1:0)*/);
+MPI_Irecv(dvar,nrecv,MPI_DOUBLE_PRECISION,qipe,100*(qipe+1)+10*(dim+1)+iside/**(iside==0?1:0)*/,MPI_COMM_WORLD,&(gmpirequest[gnmpirequest]) );
 
 }
 
@@ -826,7 +826,7 @@ int nrecv;
 
 
 //int MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int source, int tag, MPI_Comm comm, MPI_Request *request)
-gmpirequest[gnmpirequest]=MPI_Irecv(dvar,nrecv,MPI_DOUBLE_PRECISION,qipe,100*(qipe+1)+10*(dim+1)+iside/**(iside==0?1:0)*/);
+MPI_Irecv(dvar,nrecv,MPI_DOUBLE_PRECISION,qipe,100*(qipe+1)+10*(dim+1)+iside/**(iside==0?1:0)*/,MPI_COMM_WORLD,&(gmpirequest[gnmpirequest]));
 
 
 
@@ -845,6 +845,8 @@ gmpirequest[gnmpirequest]=MPI_Irecv(dvar,nrecv,MPI_DOUBLE_PRECISION,qipe,100*(qi
 //double precision:: var(ixGlo1:ixGhi1,ixGlo2:ixGhi2,nvar)
 //integer:: ixmin1,ixmin2,ixmax1,ixmax2,iside,n,ix1,ix2,ivar
 //!-----------------------------------------------------------------------------
+
+//this is only used when we don't use USE_GPUDIRECT
 void mpibuffer2var(int iside,int nvar,real *var, int *ixmin, int *ixmax, int dim, struct params *p)
 {
    int n=0;
@@ -1057,6 +1059,8 @@ void gpusync()
 {
 //printf("mpisync\n");
 //comm.Barrier();
+	MPI_Barrier(MPI_COMM_WORLD);
+
 }
 
 
@@ -1085,8 +1089,13 @@ void gpusync()
 //   ixRGmax2
 //logical :: periodic
 
+//var1, var2 and var3 are sent variables - for USE_GPUDIRECT these can be the gpu memory location of the transfer buffers
 
-void mpibound(int nvar,  real *var1, real *var2, real *var3, struct params *p, int idir)
+// dvar1, dvar2, dvar3 are the receiived variables  for USE_GPUDIRECT these will be the receive buffers on the GPU these will normally be
+// set to NULL as we use buffers on the main memory
+
+
+void mpibound(int nvar,  real *var1, real *var2, real *var3,  real *dvar1, real *dvar2, real *dvar3, struct params *p, int idir)
 {
    int i;
 
@@ -1138,13 +1147,13 @@ if((p->pnpe[0])>1   && idir==0)
    //if(p->ipe==0)
    //  printf("ipe %d  recv right (from left) %d recv left (from right neigh) %d\n",p->ipe,p->hpe,p->jpe);
    if(((p->mpilowerb[0])==1) ||  /*((p->boundtype[0][0][0])==0)||*/  ((p->boundtype[0][0][0])==2))
-	mpirecvbuffer(nvar,ixrmmin,ixrmmax,p->hpe,0,0,p);
+	mpirecvbuffer(nvar,dvar1,ixrmmin,ixrmmax,p->hpe,0,0,p);
 
    //! receive left (1) boundary from right neighbor jpe
    //if(mpiupperB(1) .or. periodic)call mpirecvbuffer(nvar,ixLMmin1,ixLMmin2,&
    //   ixLMmax1,ixLMmax2,jpe,1)
    if(((p->mpiupperb[0])==1) || /* ((p->boundtype[0][0][0])==0)|| */ ((p->boundtype[0][0][0])==2))
-             mpirecvbuffer(nvar,ixlmmin,ixlmmax,p->jpe,1,0,p);
+             mpirecvbuffer(nvar,dvar1,ixlmmin,ixlmmax,p->jpe,1,0,p);
 
 
   
@@ -1152,6 +1161,7 @@ if((p->pnpe[0])>1   && idir==0)
    //call MPI_BARRIER(MPI_COMM_WORLD,ierrmpi)
 //printf("ipe %d barrier before send\n",p->ipe);
   // comm.Barrier();
+   MPI_Barrier(MPI_COMM_WORLD);
    
    //! Ready send left (1) boundary to left neighbor hpe
 
@@ -1170,6 +1180,12 @@ if((p->pnpe[0])>1   && idir==0)
    //call MPI_WAITALL(nmpirequest,mpirequests,mpistatus,ierrmpi)
   
    /*request.Waitall(gnmpirequest,gmpirequest);*/
+   //int MPI_Waitall(int count, MPI_Request array_of_requests[],MPI_Status *array_of_statuses)
+   MPI_Waitall(gnmpirequest,gmpirequest,MPI_STATUSES_IGNORE);
+
+
+
+    #ifndef USE_GPUDIRECT
 
    //! Copy buffer received from right (2) physical cells into left ghost cells
    //if(mpilowerB(1) .or. periodic)call mpibuffer2var(2,nvar,var,ixLGmin1,&
@@ -1182,13 +1198,14 @@ if((p->pnpe[0])>1   && idir==0)
    if(((p->mpiupperb[0])==1) || /* ((p->boundtype[0][0][0])==0)|| */ ((p->boundtype[0][0][0])==2))
              mpibuffer2var(0,nvar,var1,ixrgmin,ixrgmax,0,p);    
   
- 
+   #endif  //USE_GPUDIRECT
 
 }
 
 
 
  /*  comm.Barrier();  */
+MPI_Barrier(MPI_COMM_WORLD);
 
 
 //printf("to here1 %d\n");
@@ -1230,15 +1247,17 @@ if((p->pnpe[1])>1   && idir==1)
    //if(mpilowerB(1) .or. periodic)call mpirecvbuffer(nvar,ixRMmin1,ixRMmin2,&
    //   ixRMmax1,ixRMmax2,hpe,2)
    if(((p->mpilowerb[1])==1) ||  /*((p->boundtype[0][1][0])==0)||*/  ((p->boundtype[0][0][0])==2))
-             mpirecvbuffer(nvar,ixrmmin,ixrmmax,p->hpe,0,1,p);
+             mpirecvbuffer(nvar,dvar2,ixrmmin,ixrmmax,p->hpe,0,1,p);
    //! receive left (1) boundary from right neighbor jpe
    //if(mpiupperB(1) .or. periodic)call mpirecvbuffer(nvar,ixLMmin1,ixLMmin2,&
    //   ixLMmax1,ixLMmax2,jpe,1)
    if(((p->mpiupperb[1])==1) ||  /*((p->boundtype[0][1][0])==0)||*/  ((p->boundtype[0][0][0])==2))
-             mpirecvbuffer(nvar,ixlmmin,ixlmmax,p->jpe,1,1,p);
+             mpirecvbuffer(nvar,dvar2,ixlmmin,ixlmmax,p->jpe,1,1,p);
    //! Wait for all receives to be posted
    //call MPI_BARRIER(MPI_COMM_WORLD,ierrmpi)
    /*comm.Barrier();*/
+   MPI_Barrier(MPI_COMM_WORLD);
+
    //! Ready send left (1) boundary to left neighbor hpe
    //if(mpilowerB(1) .or. periodic)call mpisend(nvar,var,ixLMmin1,ixLMmin2,&
    //   ixLMmax1,ixLMmax2,hpe,1)
@@ -1253,6 +1272,14 @@ if((p->pnpe[1])>1   && idir==1)
    //call MPI_WAITALL(nmpirequest,mpirequests,mpistatus,ierrmpi)
    /*request.Waitall(gnmpirequest,gmpirequest);*/
 
+   /*request.Waitall(gnmpirequest,gmpirequest);*/
+    //int MPI_Waitall(int count, MPI_Request array_of_requests[],MPI_Status *array_of_statuses)
+    MPI_Waitall(gnmpirequest,gmpirequest,MPI_STATUSES_IGNORE);
+
+
+
+#ifndef USE_GPUDIRECT  //USE_GPUDIRECT
+
    //! Copy buffer received from right (2) physical cells into left ghost cells
    //if(mpilowerB(1) .or. periodic)call mpibuffer2var(2,nvar,var,ixLGmin1,&
    //   ixLGmin2,ixLGmax1,ixLGmax2)
@@ -1263,10 +1290,16 @@ if((p->pnpe[1])>1   && idir==1)
    //   ixRGmin2,ixRGmax1,ixRGmax2)
    if(((p->mpiupperb[1])==1) ||  /*((p->boundtype[0][1][0])==0)||*/  ((p->boundtype[0][0][0])==2))
              mpibuffer2var(0,nvar,var2,ixrgmin,ixrgmax,1,p);
+
+
+
+#endif  //USE_GPUDIRECT
+
+
 }
 
  /*comm.Barrier();*/
-
+MPI_Barrier(MPI_COMM_WORLD);
 
 
 
@@ -1310,12 +1343,12 @@ if((p->pnpe[2])>1)
    //if(mpilowerB(1) .or. periodic)call mpirecvbuffer(nvar,ixRMmin1,ixRMmin2,&
    //   ixRMmax1,ixRMmax2,hpe,2)
    if(((p->mpilowerb[2])==1) ||  ((p->boundtype[0][2][0])==0)||  ((p->boundtype[0][0][0])==2))
-             mpirecvbuffer(nvar,ixrmmin,ixrmmax,p->hpe,0,2,p);
+             mpirecvbuffer(nvar,dvar3,ixrmmin,ixrmmax,p->hpe,0,2,p);
    //! receive left (1) boundary from right neighbor jpe
    //if(mpiupperB(1) .or. periodic)call mpirecvbuffer(nvar,ixLMmin1,ixLMmin2,&
    //   ixLMmax1,ixLMmax2,jpe,1)
    if(((p->mpiupperb[2])==1) ||  ((p->boundtype[0][2][0])==0)||  ((p->boundtype[0][0][0])==2))
-             mpirecvbuffer(nvar,ixlmmin,ixlmmax,p->jpe,1,2,p);
+             mpirecvbuffer(nvar,dvar3,ixlmmin,ixlmmax,p->jpe,1,2,p);
    //! Wait for all receives to be posted
    //call MPI_BARRIER(MPI_COMM_WORLD,ierrmpi)
    /*comm.Barrier();*/
@@ -1333,6 +1366,14 @@ if((p->pnpe[2])>1)
    //call MPI_WAITALL(nmpirequest,mpirequests,mpistatus,ierrmpi)
    /*request.Waitall(gnmpirequest,gmpirequest);*/
 
+   /*request.Waitall(gnmpirequest,gmpirequest);*/
+    //int MPI_Waitall(int count, MPI_Request array_of_requests[],MPI_Status *array_of_statuses)
+    MPI_Waitall(gnmpirequest,gmpirequest,MPI_STATUSES_IGNORE);
+
+
+#ifndef USE_GPUDIRECT  //USE_GPUDIRECT
+
+
    //! Copy buffer received from right (2) physical cells into left ghost cells
    //if(mpilowerB(1) .or. periodic)call mpibuffer2var(2,nvar,var,ixLGmin1,&
    //   ixLGmin2,ixLGmax1,ixLGmax2)
@@ -1343,6 +1384,10 @@ if((p->pnpe[2])>1)
    //   ixRGmin2,ixRGmax1,ixRGmax2)
    if(((p->mpiupperb[2])==1) ||  ((p->boundtype[0][2][0])==0)||  ((p->boundtype[0][0][0])==2))
              mpibuffer2var(0,nvar,var3,ixrgmin,ixrgmax,2,p);
+
+
+#endif  //USE_GPUDIRECT
+
 }
 
 
@@ -1353,10 +1398,10 @@ if((p->pnpe[2])>1)
 
 
 
+//MKG TO HERE 22/01/2022
 
 
-
-void mpiboundmod(int nvar,  real *var1, real *var2, real *var3, struct params *p, int idir)
+void mpiboundmod(int nvar,  real *var1, real *var2, real *var3,  real *dvar1, real *dvar2, real *dvar3, struct params *p, int idir)
 {
    int i;
 
@@ -1365,6 +1410,8 @@ void mpiboundmod(int nvar,  real *var1, real *var2, real *var3, struct params *p
 
    int ixlmmin[NDIM],ixlmmax[NDIM];
    int ixrmmin[NDIM],ixrmmax[NDIM];
+
+
 
 
 if((p->pnpe[0])>1   && idir==0)
@@ -1408,13 +1455,13 @@ if((p->pnpe[0])>1   && idir==0)
    //if(p->ipe==0)
    //  printf("ipe %d  recv right (from left) %d recv left (from right neigh) %d\n",p->ipe,p->hpe,p->jpe);
    if(((p->mpilowerb[0])==1) ||  /*((p->boundtype[0][0][0])==0)||*/  ((p->boundtype[0][0][0])==2))
-	mpirecvbuffermod(nvar,ixrmmin,ixrmmax,p->hpe,0,0,p);
+	mpirecvbuffermod(nvar,dvar1,ixrmmin,ixrmmax,p->hpe,0,0,p);
 
    //! receive left (1) boundary from right neighbor jpe
    //if(mpiupperB(1) .or. periodic)call mpirecvbuffer(nvar,ixLMmin1,ixLMmin2,&
    //   ixLMmax1,ixLMmax2,jpe,1)
    if(((p->mpiupperb[0])==1) || /* ((p->boundtype[0][0][0])==0)|| */ ((p->boundtype[0][0][0])==2))
-             mpirecvbuffermod(nvar,ixlmmin,ixlmmax,p->jpe,1,0,p);
+             mpirecvbuffermod(nvar,dvar1,ixlmmin,ixlmmax,p->jpe,1,0,p);
 
 
   
@@ -1422,6 +1469,7 @@ if((p->pnpe[0])>1   && idir==0)
    //call MPI_BARRIER(MPI_COMM_WORLD,ierrmpi)
 //printf("ipe %d barrier before send\n",p->ipe);
   // comm.Barrier();
+   MPI_Barrier(MPI_COMM_WORLD);
    
    //! Ready send left (1) boundary to left neighbor hpe
 
@@ -1440,7 +1488,11 @@ if((p->pnpe[0])>1   && idir==0)
    //call MPI_WAITALL(nmpirequest,mpirequests,mpistatus,ierrmpi)
   
   // request.Waitall(gnmpirequest,gmpirequest);
+   MPI_Waitall(gnmpirequest,gmpirequest,MPI_STATUSES_IGNORE);
 
+
+
+     #ifndef USE_GPUDIRECT
    //! Copy buffer received from right (2) physical cells into left ghost cells
    //if(mpilowerB(1) .or. periodic)call mpibuffer2var(2,nvar,var,ixLGmin1,&
    //   ixLGmin2,ixLGmax1,ixLGmax2)
@@ -1463,14 +1515,15 @@ if(((p->mpilowerb[0])==1) ||  /*((p->boundtype[0][0][0])==0)|| */ ((p->boundtype
              mpibuffer2varmod(0,nvar,var1,ixrgmin,ixrgmax,0,p);  
    }  
   
- 
+#endif  //USE_GPUDIRECT
+
 
 }
 
 
 
    /*comm.Barrier();*/
-
+MPI_Barrier(MPI_COMM_WORLD);
 
 //printf("to here1 %d\n");
 if((p->pnpe[1])>1   && idir==1)
@@ -1511,15 +1564,16 @@ if((p->pnpe[1])>1   && idir==1)
    //if(mpilowerB(1) .or. periodic)call mpirecvbuffer(nvar,ixRMmin1,ixRMmin2,&
    //   ixRMmax1,ixRMmax2,hpe,2)
    if(((p->mpilowerb[1])==1) ||  /*((p->boundtype[0][1][0])==0)||*/  ((p->boundtype[0][0][0])==2))
-             mpirecvbuffermod(nvar,ixrmmin,ixrmmax,p->hpe,0,1,p);
+             mpirecvbuffermod(nvar,dvar2,ixrmmin,ixrmmax,p->hpe,0,1,p);
    //! receive left (1) boundary from right neighbor jpe
    //if(mpiupperB(1) .or. periodic)call mpirecvbuffer(nvar,ixLMmin1,ixLMmin2,&
    //   ixLMmax1,ixLMmax2,jpe,1)
    if(((p->mpiupperb[1])==1) ||  /*((p->boundtype[0][1][0])==0)||*/  ((p->boundtype[0][0][0])==2))
-             mpirecvbuffermod(nvar,ixlmmin,ixlmmax,p->jpe,1,1,p);
+             mpirecvbuffermod(nvar,dvar2,ixlmmin,ixlmmax,p->jpe,1,1,p);
    //! Wait for all receives to be posted
    //call MPI_BARRIER(MPI_COMM_WORLD,ierrmpi)
    /*comm.Barrier();*/
+   MPI_Barrier(MPI_COMM_WORLD);
    //! Ready send left (1) boundary to left neighbor hpe
    //if(mpilowerB(1) .or. periodic)call mpisend(nvar,var,ixLMmin1,ixLMmin2,&
    //   ixLMmax1,ixLMmax2,hpe,1)
@@ -1533,7 +1587,11 @@ if((p->pnpe[1])>1   && idir==1)
    //! Wait for messages to arrive
    //call MPI_WAITALL(nmpirequest,mpirequests,mpistatus,ierrmpi)
    /*request.Waitall(gnmpirequest,gmpirequest);*/
+   MPI_Waitall(gnmpirequest,gmpirequest,MPI_STATUSES_IGNORE);
 
+
+
+#ifndef USE_GPUDIRECT  //USE_GPUDIRECT
    //! Copy buffer received from right (2) physical cells into left ghost cells
    //if(mpilowerB(1) .or. periodic)call mpibuffer2var(2,nvar,var,ixLGmin1,&
    //   ixLGmin2,ixLGmax1,ixLGmax2)
@@ -1544,9 +1602,13 @@ if((p->pnpe[1])>1   && idir==1)
    //   ixRGmin2,ixRGmax1,ixRGmax2)
    if(((p->mpiupperb[1])==1) ||  /*((p->boundtype[0][1][0])==0)||*/  ((p->boundtype[0][0][0])==2))
              mpibuffer2varmod(0,nvar,var2,ixrgmin,ixrgmax,1,p);
+#endif  //USE_GPUDIRECT
+
+
 }
 
  /*comm.Barrier();*/
+MPI_Barrier(MPI_COMM_WORLD);
 
 
 
@@ -1592,12 +1654,12 @@ if((p->pnpe[2])>1)
    //if(mpilowerB(1) .or. periodic)call mpirecvbuffer(nvar,ixRMmin1,ixRMmin2,&
    //   ixRMmax1,ixRMmax2,hpe,2)
    if(((p->mpilowerb[2])==1) ||  ((p->boundtype[0][2][0])==0)||  ((p->boundtype[0][0][0])==2))
-             mpirecvbuffermod(nvar,ixrmmin,ixrmmax,p->hpe,0,2,p);
+             mpirecvbuffermod(nvar,dvar3,ixrmmin,ixrmmax,p->hpe,0,2,p);
    //! receive left (1) boundary from right neighbor jpe
    //if(mpiupperB(1) .or. periodic)call mpirecvbuffer(nvar,ixLMmin1,ixLMmin2,&
    //   ixLMmax1,ixLMmax2,jpe,1)
    if(((p->mpiupperb[2])==1) ||  ((p->boundtype[0][2][0])==0)||  ((p->boundtype[0][0][0])==2))
-             mpirecvbuffermod(nvar,ixlmmin,ixlmmax,p->jpe,1,2,p);
+             mpirecvbuffermod(nvar,dvar3,ixlmmin,ixlmmax,p->jpe,1,2,p);
    //! Wait for all receives to be posted
    //call MPI_BARRIER(MPI_COMM_WORLD,ierrmpi)
    /*comm.Barrier();*/
@@ -1614,7 +1676,7 @@ if((p->pnpe[2])>1)
    //! Wait for messages to arrive
    //call MPI_WAITALL(nmpirequest,mpirequests,mpistatus,ierrmpi)
    /*request.Waitall(gnmpirequest,gmpirequest);*/
-
+   MPI_Waitall(gnmpirequest,gmpirequest,MPI_STATUSES_IGNORE);
    //! Copy buffer received from right (2) physical cells into left ghost cells
    //if(mpilowerB(1) .or. periodic)call mpibuffer2var(2,nvar,var,ixLGmin1,&
    //   ixLGmin2,ixLGmax1,ixLGmax2)
@@ -1654,7 +1716,12 @@ void mpireduce(real *a, MPI_Op mpifunc)
   real alocal;
 
    alocal=*a;
+   //int MPI_Reduce(const void *sendbuf, void *recvbuf, int count,
+   //               MPI_Datatype datatype, MPI_Op op, int root,
+   //               MPI_Comm comm)
+
    /*comm.Reduce(&alocal, a, 1, MPI_DOUBLE_PRECISION, mpifunc, 0);*/
+   MPI_Reduce(&alocal, a, 1, MPI_DOUBLE_PRECISION, mpifunc, 0,MPI_COMM_WORLD);
 
 }
 
@@ -1679,13 +1746,15 @@ void mpiallreduce(real *a, MPI_Op mpifunc)
 
    alocal=*a;
    /*comm.Allreduce(&alocal, a, 1, MPI_DOUBLE_PRECISION, mpifunc);*/
+   MPI_Allreduce(&alocal, a, 1, MPI_DOUBLE_PRECISION, mpifunc, 0,MPI_COMM_WORLD);
 
 }
 
 //update viscosity term
-void mpivisc( int idim,struct params *p, real *var1, real *var2, real *var3)
+void mpivisc( int idim,struct params *p, real *var1, real *var2, real *var3, real *dvar1, real *dvar2, real *dvar3)
 {
    //comm.Barrier();
+	MPI_Barrier(MPI_COMM_WORLD);
    int i,n;
    int i1,i2,i3;
    int bound;
@@ -1735,37 +1804,73 @@ void mpivisc( int idim,struct params *p, real *var1, real *var2, real *var3)
 //printf("vis1bupper proc %d %d %d  %d %d %d %d\n",p->ipe,p->jpe,p->phpe,p->mpiupperb[idim],p->mpilowerb[idim],n,100*(p->jpe)+10*(idim+1));
 //gmpirequest[gnmpirequest]=comm.Irecv(gmpitgtbufferr[0],n,MPI_DOUBLE_PRECISION,p->jpe,100*(p->jpe)+10*(idim+1));
 ;//gmpirequest[gnmpirequest]=comm.Irecv(gmpitgtbufferr[0],n,MPI_DOUBLE_PRECISION,p->pjpe[idim],MPI_ANY_TAG);
+//int MPI_Irecv(void *buf, int count, MPI_Datatype datatype,
+//        int source, int tag, MPI_Comm comm, MPI_Request *request)
+#ifndef USE_GPUDIRECT
+    dvar1=&(gmpitgtbufferr[0]);
+#endif //USE_GPUDIRECT
+MPI_Irecv(dvar1,n,MPI_DOUBLE_PRECISION,p->pjpe[idim],MPI_ANY_TAG,MPI_COMM_WORLD,&gmpirequest[gnmpirequest]);
+
+
 
 }
-//comm.Barrier();
+
+
+
+
         if((p->mpilowerb[idim])==1  ) gnmpirequest++;
 //comm.Barrier();
         if((p->mpilowerb[idim])==1  )
         {
 //printf("vis1blower proc %d %d %d  %d %d %d %d\n",p->ipe,p->pjpe[idim],p->phpe[idim],p->mpiupperb[idim],p->mpilowerb[idim],n,100*((p->hpe))+10*(idim+1)+1);
  //        gmpirequest[gnmpirequest]=comm.Irecv(gmpitgtbufferl[0],n,MPI_DOUBLE_PRECISION,p->hpe,100*(p->hpe)+10*(idim+1)+1);
- //        gmpirequest[gnmpirequest]=comm.Irecv(gmpitgtbufferl[0],n,MPI_DOUBLE_PRECISION,p->phpe[idim],MPI_ANY_TAG);
+        // gmpirequest[gnmpirequest]=comm.Irecv(gmpitgtbufferl[0],n,MPI_DOUBLE_PRECISION,p->phpe[idim],MPI_ANY_TAG);
+
+#ifndef USE_GPUDIRECT
+    dvar1=&(gmpitgtbufferl[0]);
+#endif //USE_GPUDIRECT
+MPI_Irecv(dvar1,n,MPI_DOUBLE_PRECISION,p->phpe[idim],MPI_ANY_TAG,MPI_COMM_WORLD,&gmpirequest[gnmpirequest]);
+
+
+
 
         }
         /*comm.Barrier();*/
-          
+        MPI_Barrier(MPI_COMM_WORLD);
+
+
         if((p->mpiupperb[idim])==1  ) 
 {
 
 //printf("vis1a upperproc %d %d %d  %d %d   %d %d\n",p->ipe,p->jpe,p->hpe,p->mpiupperb[idim],p->mpilowerb[idim],n, 100*(p->ipe)+10*(idim+1)+1);  
-/*comm.Rsend(gmpisrcbufferr[0], n, MPI_DOUBLE_PRECISION, p->jpe,100*(p->ipe)+10*(idim+1)+1 );*/
-;//comm.Rsend(gmpisrcbufferr[0], n, MPI_DOUBLE_PRECISION, p->pjpe[idim], MPI_ANY_TAG);
+
+#ifndef USE_GPUDIRECT //USE_GPUDIRECT
+        	var1=&(	gmpisrcbufferr[0]);
+#endif //USE_GPUDIRECT
+        	/*comm.Rsend(gmpisrcbufferr[0], n, MPI_DOUBLE_PRECISION, p->jpe,100*(p->ipe)+10*(idim+1)+1 );*/
+
+//comm.Rsend(gmpisrcbufferr[0], n, MPI_DOUBLE_PRECISION, p->pjpe[idim], MPI_ANY_TAG);
+//int MPI_Rsend(const void *buf, int count, MPI_Datatype datatype, int dest,
+//    int tag, MPI_Comm comm)
+MPI_Rsend(var1, n, MPI_DOUBLE_PRECISION, p->pjpe[idim], MPI_ANY_TAG,MPI_COMM_WORLD);
 
 
 }
           
 //comm.Barrier();
+
+
+#ifndef USE_GPUDIRECT //USE_GPUDIRECT
+        	var1=&(	gmpisrcbufferl[0]);
+#endif //USE_GPUDIRECT
+
+
         if((p->mpilowerb[idim])==1  )
 {
 //  printf("vis1a lowerproc %d %d %d  %d %d   %d %d\n",p->ipe,p->jpe,p->hpe,p->mpiupperb[idim],p->mpilowerb[idim],n,  100*(p->ipe)+10*(idim+1));
  /*comm.Rsend(gmpisrcbufferl[0], n, MPI_DOUBLE_PRECISION, p->hpe,  100*(p->ipe)+10*(idim+1));*/
-;//comm.Rsend(gmpisrcbufferl[0], n, MPI_DOUBLE_PRECISION, p->phpe[idim], MPI_ANY_TAG);
-
+//comm.Rsend(gmpisrcbufferl[0], n, MPI_DOUBLE_PRECISION, p->phpe[idim], MPI_ANY_TAG);
+MPI_Rsend(var1, n, MPI_DOUBLE_PRECISION, p->phpe[idim], MPI_ANY_TAG,MPI_COMM_WORLD);
 
 }
 
@@ -1779,7 +1884,7 @@ void mpivisc( int idim,struct params *p, real *var1, real *var2, real *var3)
   
         //copy data from buffer to the viscosity data in temp2
         //organise buffers so that pointers are swapped instead
-
+#ifndef USE_GPUDIRECT
         #ifdef USE_SAC3D
    //tmp_nuI(ixFhi1+1,ixFlo2:ixFhi2,ixFlo3:ixFhi3)=tgtbufferR1(1,ixFlo2:ixFhi2,&
    //   ixFlo3:ixFhi3) !right, upper R
@@ -1826,7 +1931,7 @@ void mpivisc( int idim,struct params *p, real *var1, real *var2, real *var3)
  
          
         #endif
-
+#endif //ifndef USE_GPUDIRECT
         
 
      break;
@@ -1844,25 +1949,57 @@ void mpivisc( int idim,struct params *p, real *var1, real *var2, real *var3)
 
         if((p->mpiupperb[idim])==1  ) gnmpirequest++;
         if((p->mpiupperb[idim])==1 )
+        {
+#ifndef USE_GPUDIRECT
+    dvar2=&(gmpitgtbufferr[1]);
+#endif //USE_GPUDIRECT
+MPI_Irecv(dvar2,n,MPI_DOUBLE_PRECISION,p->pjpe,100*(p->jpe)+10*(idim+1),MPI_COMM_WORLD,&gmpirequest[gnmpirequest]);
+   }
+
+
+
 ;//gmpirequest[gnmpirequest]=comm.Irecv(gmpitgtbufferr[1],n,MPI_DOUBLE_PRECISION,p->jpe,100*(p->jpe)+10*(idim+1));
         if((p->mpilowerb[idim])==1  ) gnmpirequest++;
         if((p->mpilowerb[idim])==1  )
+        {
+#ifndef USE_GPUDIRECT
+    dvar2=&(gmpitgtbufferl[1]);
+#endif //USE_GPUDIRECT
+MPI_Irecv(dvar2,n,MPI_DOUBLE_PRECISION,p->phpe,100*(p->hpe)+10*(idim+1),MPI_COMM_WORLD,&gmpirequest[gnmpirequest]);
+   }
         ;// gmpirequest[gnmpirequest]=comm.Irecv(gmpitgtbufferl[1],n,MPI_DOUBLE_PRECISION,p->hpe,100*(p->hpe)+10*(idim+1)+1);
         /*comm.Barrier();*/
           
         if((p->mpiupperb[idim])==1  ) 
+        {
+#ifndef USE_GPUDIRECT //USE_GPUDIRECT
+        	dvar2=&(	gmpisrcbufferr[1]);
+        	MPI_Rsend(dvar2, n, MPI_DOUBLE_PRECISION, p->pjpe, 100*(p->ipe)+10*(idim+1)+1,MPI_COMM_WORLD);
+#endif //USE_GPUDIRECT
+        }
+
 /*comm.Rsend(gmpisrcbufferr[1], n, MPI_DOUBLE_PRECISION, p->jpe,100*(p->ipe)+10*(idim+1)+1 );*/
           
         if((p->mpilowerb[idim])==1  )
+        {
+#ifndef USE_GPUDIRECT //USE_GPUDIRECT
+        	dvar2=&(	gmpisrcbufferl[1]);
+        	MPI_Rsend(dvar2, n, MPI_DOUBLE_PRECISION, p->phpe, 100*(p->jpe)+10*(idim+1)+1,MPI_COMM_WORLD);
+#endif //USE_GPUDIRECT
+        }
  /*comm.Rsend(gmpisrcbufferl[1], n, MPI_DOUBLE_PRECISION, p->hpe,  100*(p->ipe)+10*(idim+1));*/
 
      /*comm.Barrier();
- 
+
+ int MPI_Waitall(int count, MPI_Request array_of_requests[],
+    MPI_Status *array_of_statuses)
         request.Waitall(gnmpirequest,gmpirequest);*/
+        MPI_Barrier(MPI_COMM_WORLD);
+        MPI_Waitall(gnmpirequest,gmpirequest,NULL);
 
 
 
-
+/*check to here MKG*/
 
 
 
