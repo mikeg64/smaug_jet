@@ -1,10 +1,10 @@
 #make include file for building StarSimulation IoSimTestSimple on Felix
 # Standard defines:
-CC  	=	nvcc # normally g++
+CC  	=	g++ # normally g++
 ##CC  	=	mpiCC
 NVCC  	=	nvcc
 FF  	=	gfortran
-LD  	=	nvcc #normally g++
+LD  	=	g++ #normally g++
 HOMEV	=	..
 VPATH	=	$(HOMEV)/include
 oDir	=	.
@@ -15,7 +15,7 @@ MYLIBS  =
 #CUDA = /usr/local/cuda
 #CUDA = /usr/local/cuda-5.0
 #CUDA = /usr/local/lib/nvidia-cuda/toolkit/4.0.17
-CUDA = /usr/local/cuda-10.0
+CUDA = /usr/local/cuda-11.8
 
 BASE = /usr/local/dx
 incDirs = -I$(BASE)/include  -I$(IOME_HOME)/include  -I/usr/local/include -I$(CUDA)/include -I$../include

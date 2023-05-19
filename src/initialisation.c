@@ -1,138 +1,13 @@
-#include "../include/iotypes.h"
-#include <stdio.h>
-#ifdef USE_IOME
-#include <iome/genericsimulationlib/IoGenericSimulationLib.h>
-#include "initialisation.h"
 
 
-void createsim(params k,  meta metadata,char *simname, iome el)
-{
-int i;
-int ni,nj;
-double xmax,ymax;
-double dx,dy,dt,tmax,wavespeed;
-double courant;
-
-//elist=list();  parameter used by iome to contain port and server address
-//elist=list();
-//printf("createsim1\n");
-//printf("author %s %d %s\n",metadata.author,el.port,el.server);
-//it   t   dt    rho m1 m2 e bx by
-addmetadata_(el.id,"author",metadata.author,el.port,el.server);
-addmetadata_(el.id,"directory",metadata.directory,el.port,el.server);
-addmetadata_(el.id,"date",metadata.sdate,el.port,el.server);
-addmetadata_(el.id,"platform",metadata.platform,el.port,el.server);
-addmetadata_(el.id,"description",metadata.desc,el.port,el.server);
-addmetadata_(el.id,"name",metadata.name,el.port,el.server);
-addmetadata_(el.id,"ini_file",metadata.ini_file,el.port,el.server);
-addmetadata_(el.id,"log_file",metadata.log_file,el.port,el.server);
-addmetadata_(el.id,"output_file",metadata.out_file,el.port,el.server);
-
-// Constants
-//adddoubleparam_(el.id,"g",k.g,7,el.port,el.server);
-//adddoubleparam_(el.id,"u0",k.u0,7,el.port,el.server);
-//adddoubleparam_(el.id,"v0",k.v0,7,el.port,el.server);
-//adddoubleparam_(el.id,"b",k.b0,7,el.port,el.server);
-//adddoubleparam_(el.id,"h0",k.h0,7,el.port,el.server);
-
-//Domain definition
-// Define the x domain
-//ni = 151; 
-ni=k.n[0];
-xmax = k.xmax[0];                      
-k.dx[0] = xmax/(ni-1);
-//x  = [0:dx:xmax];
-
-// Define the y domain
-//nj = 151;  
-nj=k.n[1];
-ymax = k.xmax[1];                      
-k.dx[1] = ymax/(nj-1);
-//y  = [0:dy:ymax];
-
-tmax = k.tmax;
-
-// Define the wavespeed
-dt=k.dt;
-//wavespeed = k.u0 + sqrt(k.g*(k.h0 - k.b0));
-
-// Define time-domain
-//dt = 0.68*dx/wavespeed;
-
-//t = [0:dt:tdomain];
-//t=[1:dt:tmax];
-k.nt=(int)((tmax-1)/dt);
-courant = wavespeed*dt/dx;
-
-adddoubleparam_(el.id,"ni",k.n[0],7,el.port,el.server);
-adddoubleparam_(el.id,"nj",k.n[1],7,el.port,el.server);
-adddoubleparam_(el.id,"xmax",k.xmax[0],7,el.port,el.server);
-adddoubleparam_(el.id,"ymax",k.xmax[1],7,el.port,el.server);
-adddoubleparam_(el.id,"tmax",k.tmax,7,el.port,el.server);
-addintparam_(el.id,"nt",k.nt,7,el.port,el.server);
-addintparam_(el.id,"steeringenabled",k.steeringenabled,7,el.port,el.server);
-addintparam_(el.id,"finishsteering",k.finishsteering,7,el.port,el.server);
-addintparam_(el.id,"step",k.dt,7,el.port,el.server);
+#include "../include/initialisation.h"
 
 
 
 
 
 
-
-//simfile=sprintf('%s.xml',simname)
-
-
-
-//endfunction
-}
-
-void readsim(params *k,  meta *md,char *simfile, iome el)
-{
-    //      readsimulation_(el.id,simfile,el.port,el.server);
-double ni,nj;
-double xmax,ymax;
-double dx,dy,tmax;
-int nt,steeringenabled, finishsteering;
-
-
-getmetadata_(el.id,"author",&(md->author),el.port,el.server);
-getmetadata_(el.id,"directory",&(md->directory),el.port,el.server);
-getmetadata_(el.id,"date",&(md->sdate),el.port,el.server);
-getmetadata_(el.id,"platform",&(md->platform),el.port,el.server);
-getmetadata_(el.id,"description",&(md->desc),el.port,el.server);
-getmetadata_(el.id,"name",&(md->name),el.port,el.server);
-getmetadata_(el.id,"ini_file",&(md->ini_file),el.port,el.server);
-getmetadata_(el.id,"log_file",&(md->log_file),el.port,el.server);
-getmetadata_(el.id,"out_file",&(md->out_file),el.port,el.server);
-
-getdoubleparam_(el.id,"ni",&ni,el.port,el.server);
-getdoubleparam_(el.id,"nj",&nj,el.port,el.server);
-getdoubleparam_(el.id,"xmax",&xmax,el.port,el.server);
-getdoubleparam_(el.id,"ymax",&ymax,el.port,el.server);
-getintparam_(&el.id,"nt",&nt,&el.port,el.server);
-getintparam_(&el.id,"steeringenabled",&steeringenabled,&el.port,el.server);
-getintparam_(&el.id,"finishsteering",&finishsteering,&el.port,el.server);
-
-
-
-
-k->n[0]=ni;
-k->n[1]=nj;
-k->xmax[0]=xmax;
-k->xmax[1]=ymax;
-k->nt=nt;
-k->steeringenabled=steeringenabled;
-k->finishsteering=finishsteering;
-
-
-  printf("read metadata\n");
-
-}
-
-#endif
-
-int encode3_in(params *dp,int ix, int iy, int iz, int field) {
+int encode3_in(Params *dp,int ix, int iy, int iz, int field) {
 
 
   #ifdef USE_SAC_3D
@@ -142,7 +17,7 @@ int encode3_in(params *dp,int ix, int iy, int iz, int field) {
   #endif
 }
 
-void initconfig(params *k, meta *md, real *w, real *wd)
+void initconfig(Params *k, Meta *md, real *w, real *wd)
 {
 
 
@@ -156,7 +31,7 @@ void initconfig(params *k, meta *md, real *w, real *wd)
         for(i1=0; i1<(k->n[0]) ;i1++)
 	  for(j1=0; j1<(k->n[1]) ;j1++)
           {
-                    
+
                     wd[encode3_in(k,i1,j1,k1,pos1)]=(k->xmin[0])+((real)i1)*((k->xmax[0])- (k->xmin[0])  )/ni;
                     wd[encode3_in(k,i1,j1,k1,delx1)]=((k->xmax[0])- (k->xmin[0])  )/ni;
                     wd[encode3_in(k,i1,j1,k1,pos2)]=(k->xmin[1])+((real)j1)*((k->xmax[1])- (k->xmin[1])  )/nj;
@@ -208,3 +83,364 @@ void initconfig(params *k, meta *md, real *w, real *wd)
 
 
 }
+
+int encode3_uin(Params *dp,int ix, int iy, int iz, int field) {
+
+
+  #ifdef USE_SAC_3D
+    return ( (iz*((dp)->n[0])*((dp)->n[1])  + iy * ((dp)->n[0]) + ix)+(field*((dp)->n[0])*((dp)->n[1])*((dp)->n[2])));
+  #else
+    return ( (iy * ((dp)->n[0]) + ix)+(field*((dp)->n[0])*((dp)->n[1])));
+  #endif
+}
+
+int fencode3_uin (Params *dp,int *ii, int field) {
+
+
+#ifdef USE_SAC_3D
+   return (ii[2]*((dp)->n[0])*((dp)->n[1])  + ii[1] * ((dp)->n[0]) + ii[0]+(field*((dp)->n[0])*((dp)->n[1])*((dp)->n[2])));
+#else
+   return ( ii[1] * ((dp)->n[0]) + ii[0]+(field*((dp)->n[0])*((dp)->n[1])));
+#endif
+
+}
+
+
+#ifdef USE_SAC_3D
+real grad3dngen_uin(real ***wmod, real *wd,struct params *p,int *ii,int dir)
+#else
+real grad3dngen_uin(real **wmod, real *wd,Params *p,int *ii,int dir)
+#endif
+{
+
+
+ real grad=0;
+
+
+
+ switch(dir)
+ {
+   case 0:
+#ifdef USE_SAC_3D
+
+if(ii[0]>1 && ii[0]<((p->n[0])-2) )
+ grad=(  ( ((8*wmod[ii[0]+1][ii[1]][ii[2]]-8*wmod[ii[0]-1][ii[1]][ii[2]]+wmod[ii[0]-2][ii[1]][ii[2]]-wmod[ii[0]+2][ii[1]][ii[2]])/6.0))/(2.0*(wd[fencode3_uin(p,ii,delx1)]))    );
+
+
+
+
+  ;//for OZT test using MPI use this directive further clarification needed
+  #ifndef USE_MPI
+   if((ii[0]==(p->n[0])-3) || (ii[0]==(p->n[0])-4)  && ii[1]>1   && ii[1]<(p->n[1])-2 && ii[2]>1   && ii[2]<(p->n[2])-2  )
+       grad=0;
+   else if(ii[0]==2 || ii[0]==3  && ii[1]>1   && ii[1]<(p->n[1])-2 && ii[2]>1   && ii[2]<(p->n[2])-2  )
+       grad=0;
+  #endif
+
+#else
+
+
+if(ii[0]>1 && ii[0]<((p->n[0])-2) )
+ grad=(  ( ((8*wmod[ii[0]+1][ii[1]]-8*wmod[ii[0]-1][ii[1]]+wmod[ii[0]-2][ii[1]]-wmod[ii[0]+2][ii[1]])/6.0))/(2.0*(wd[fencode3_uin(p,ii,delx1)]))    );
+
+
+
+  ;//for OZT test using MPI use this directive further clarification needed
+  #ifndef USE_MPI
+   if((ii[0]==(p->n[0])-3) || (ii[0]==(p->n[0])-4)  && ii[1]>1   && ii[1]<(p->n[1])-2  )
+       grad=0;
+   else if(ii[0]==2 || ii[0]==3  && ii[1]>1   && ii[1]<(p->n[1])-2  )
+       grad=0;
+  #endif
+#endif
+
+
+   break;
+
+   case 1:
+
+
+#ifdef USE_SAC_3D
+
+
+if( ii[1] >1 &&  ii[1]<((p->n[1])-2))
+	grad=(  ( ((8*wmod[ii[0]][ii[1]+1][ii[2]]-8*wmod[ii[0]][ii[1]-1][ii[2]]+wmod[ii[0]][ii[1]-2][ii[2]]-wmod[ii[0]][ii[1]+2][ii[2]])/6.0))/(2.0*(wd[fencode3_uin(p,ii,delx2)]))    );
+
+
+  ;//for OZT test using MPI use this directive further clarification needed
+  #ifndef USE_MPI
+   if((ii[1]==(p->n[1])-3) || (ii[1]==(p->n[1])-4)  && ii[0]>1   && ii[0]<(p->n[0])-2  && ii[2]>1   && ii[2]<(p->n[2])-2  )
+       grad=0;
+   else if(ii[1]==2 || ii[1]==3  && ii[0]>1   && ii[0]<(p->n[0])-2  && ii[2]>1   && ii[2]<(p->n[2])-2  )
+       grad=0;
+  #endif
+#else
+
+
+if( ii[1] >1 &&  ii[1]<((p->n[1])-2))
+	grad=(  ( ((8*wmod[ii[0]][ii[1]+1]-8*wmod[ii[0]][ii[1]-1]+wmod[ii[0]][ii[1]-2]-wmod[ii[0]][ii[1]+2])/6.0))/(2.0*(wd[fencode3_uin(p,ii,delx2)]))    );
+
+
+
+  ;//for OZT test using MPI use this directive further clarification needed
+  #ifndef USE_MPI
+   if((ii[1]==(p->n[1])-3) || (ii[1]==(p->n[1])-4)  && ii[0]>1   && ii[0]<(p->n[0])-2  )
+       grad=0;
+   else if(ii[1]==2 || ii[1]==3  && ii[0]>1   && ii[0]<(p->n[0])-2  )
+       grad=0;
+  #endif
+#endif
+
+
+   break;
+
+
+   case 2:
+#ifdef USE_SAC_3D
+
+if( ii[2] >1 &&  ii[2]<((p->n[2])-2))
+	grad=(  ( ((8*wmod[ii[0]][ii[1]][ii[2]+1]-8*wmod[ii[0]][ii[1]][ii[2]-1]+wmod[ii[0]][ii[1]][ii[2]-2]-wmod[ii[0]][ii[1]][ii[2]+2])/6.0))/(2.0*(wd[fencode3_uin(p,ii,delx3)]))    );
+
+
+
+
+  ;//for OZT test using MPI use this directive further clarification needed
+  #ifndef USE_MPI
+   if((ii[2]==(p->n[2])-3) || (ii[2]==(p->n[2])-4)  && ii[0]>1   && ii[0]<(p->n[0])-2 && ii[1]>1   && ii[1]<(p->n[1])-2  )
+       grad=0;
+   else if(ii[2]==2 || ii[2]==3  && ii[0]>1   && ii[0]<(p->n[0])-2 && ii[1]>1   && ii[1]<(p->n[1])-2  )
+       grad=0;
+  #endif
+#endif
+
+   break;
+
+
+}
+
+
+
+ return grad;
+
+
+}
+
+
+
+real grad3dn_uin(real *wmod, real *wd,struct params *p,int *ii,int field,int dir)
+{
+
+
+ real grad=0;
+
+
+
+ switch(dir)
+ {
+   case 0:
+
+#ifdef USE_SAC_3D
+  #ifdef USE_DORDER3
+ if(ii[0]>2 && ii[0]<((p->n[0])-3) )
+  grad=(  ( ((3*wmod[encode3_uin(p,ii[0]+1,ii[1],ii[2],field)]-3*wmod[encode3_uin(p,ii[0]-1,ii[1],ii[2],field)]+3.0*(wmod[encode3_uin(p,ii[0]-2,ii[1],ii[2],field)]-wmod[encode3_uin(p,ii[0]+2,ii[1],ii[2],field)])/5.0-(wmod[encode3_uin(p,ii[0]-3,ii[1],ii[2],field)]-wmod[encode3_uin(p,ii[0]+3,ii[1],ii[2],field)])/15.0)/2.0))/(2.0*(wd[fencode3_uin(p,ii,delx1)]))    );
+
+  #else
+if(ii[0]>1 && ii[0]<((p->n[0])-2) )
+ grad=(  ( ((8*wmod[encode3_uin(p,ii[0]+1,ii[1],ii[2],field)]-8*wmod[encode3_uin(p,ii[0]-1,ii[1],ii[2],field)]+wmod[encode3_uin(p,ii[0]-2,ii[1],ii[2],field)]-wmod[encode3_uin(p,ii[0]+2,ii[1],ii[2],field)])/6.0))/(2.0*(wd[fencode3_uin(p,ii,delx1)]))    );
+ #endif
+
+#ifdef USE_MPI
+if(p->boundtype[field][dir][0] !=1  )
+  if(p->mpiupperb[dir]==1  )
+#else
+if(p->boundtype[field][dir][0] !=0  )
+#endif
+{
+
+  ;//for OZT test using MPI use this directive further clarification needed
+  #ifndef USE_MPI
+   if((ii[0]==(p->n[0])-3) || (ii[0]==(p->n[0])-4)  && ii[1]>1   && ii[1]<(p->n[1])-2 && ii[2]>1   && ii[2]<(p->n[2])-2  )
+       grad=0;
+   else if(ii[0]==2 || ii[0]==3  && ii[1]>1   && ii[1]<(p->n[1])-2 && ii[2]>1   && ii[2]<(p->n[2])-2  )
+       grad=0;
+  #endif
+}
+#else
+
+  #ifdef USE_DORDER3
+if(ii[0]>2 && ii[0]<((p->n[0])-3) )
+ grad=(  ( ((3*wmod[encode3_uin(p,ii[0]+1,ii[1],0,field)]-3*wmod[encode3_uin(p,ii[0]-1,ii[1],0,field)]+3.0*(wmod[encode3_uin(p,ii[0]-2,ii[1],0,field)]-wmod[encode3_uin(p,ii[0]+2,ii[1],0,field)])/5.0-(wmod[encode3_uin(p,ii[0]-3,ii[1],0,field)]-wmod[encode3_uin(p,ii[0]+3,ii[1],0,field)])/15.0)/2.0))/(2.0*(wd[fencode3_uin(p,ii,delx1)]))    );
+
+  #else
+if(ii[0]>1 && ii[0]<((p->n[0])-2) )
+ grad=(  ( ((8*wmod[encode3_uin(p,ii[0]+1,ii[1],0,field)]-8*wmod[encode3_uin(p,ii[0]-1,ii[1],0,field)]+wmod[encode3_uin(p,ii[0]-2,ii[1],0,field)]-wmod[encode3_uin(p,ii[0]+2,ii[1],0,field)])/6.0))/(2.0*(wd[fencode3_uin(p,ii,delx1)]))    );
+ #endif
+#ifdef USE_MPI
+if(p->boundtype[field][dir][0] !=1  )
+  if(p->mpiupperb[dir]==1  )
+#else
+if(p->boundtype[field][dir][0] !=0  )
+#endif
+{
+
+  ;//for OZT test using MPI use this directive further clarification needed
+  #ifndef USE_MPI
+   if((ii[0]==(p->n[0])-3) || (ii[0]==(p->n[0])-4)  && ii[1]>1   && ii[1]<(p->n[1])-2  )
+       grad=0;
+   else if(ii[0]==2 || ii[0]==3  && ii[1]>1   && ii[1]<(p->n[1])-2  )
+       grad=0;
+  #endif
+}
+#endif
+
+
+
+   break;
+
+   case 1:
+
+#ifdef USE_SAC_3D
+
+  #ifdef USE_DORDER3
+ if(ii[1]>2 && ii[1]<((p->n[1])-3) )
+  grad=(  ( ((3*wmod[encode3_uin(p,ii[0],ii[1]+1,ii[2],field)]-3*wmod[encode3_uin(p,ii[0],ii[1]-1,ii[2],field)]+3.0*(wmod[encode3_uin(p,ii[0],ii[1]-2,ii[2],field)]-wmod[encode3_uin(p,ii[0],ii[1]+2,ii[2],field)])/5.0-(wmod[encode3_uin(p,ii[0],ii[1]-3,ii[2],field)]-wmod[encode3_uin(p,ii[0],ii[1]+3,ii[2],field)])/15.0)/2.0))/(2.0*(wd[fencode3_uin(p,ii,delx2)]))    );
+
+#else
+if( ii[1] >1 &&  ii[1]<((p->n[1])-2))
+	grad=(  ( ((8*wmod[encode3_uin(p,ii[0],ii[1]+1,ii[2],field)]-8*wmod[encode3_uin(p,ii[0],ii[1]-1,ii[2],field)]+wmod[encode3_uin(p,ii[0],ii[1]-2,ii[2],field)]-wmod[encode3_uin(p,ii[0],ii[1]+2,ii[2],field)])/6.0))/(2.0*(wd[fencode3_uin(p,ii,delx2)]))    );
+ #endif
+#ifdef USE_MPI
+if(p->boundtype[field][dir][0] !=1  )
+  if(p->mpiupperb[dir]==1  )
+#else
+if(p->boundtype[field][dir][0] !=0  )
+#endif
+{
+  ;//for OZT test using MPI use this directive further clarification needed
+  #ifndef USE_MPI
+   if((ii[1]==(p->n[1])-3) || (ii[1]==(p->n[1])-4)  && ii[0]>1   && ii[0]<(p->n[0])-2  && ii[2]>1   && ii[2]<(p->n[2])-2  )
+       grad=0;
+   else if(ii[1]==2 || ii[1]==3  && ii[0]>1   && ii[0]<(p->n[0])-2  && ii[2]>1   && ii[2]<(p->n[2])-2  )
+       grad=0;
+  #endif
+}
+#else
+
+  #ifdef USE_DORDER3
+if(ii[1]>2 && ii[1]<((p->n[1])-3) )
+ grad=(  ( ((3*wmod[encode3_uin(p,ii[0],ii[1]+1,0,field)]-3*wmod[encode3_uin(p,ii[0],ii[1]-1,0,field)]+3.0*(wmod[encode3_uin(p,ii[0],ii[1]-2,0,field)]-wmod[encode3_uin(p,ii[0],ii[1]+2,0,field)])/5.0-(wmod[encode3_uin(p,ii[0],ii[1]-3,0,field)]-wmod[encode3_uin(p,ii[0],ii[1]+3,0,field)])/15.0)/2.0))/(2.0*(wd[fencode3_uin(p,ii,delx2)]))    );
+
+#endif
+if( ii[1] >1 &&  ii[1]<((p->n[1])-2))
+	grad=(  ( ((8*wmod[encode3_uin(p,ii[0],ii[1]+1,0,field)]-8*wmod[encode3_uin(p,ii[0],ii[1]-1,0,field)]+wmod[encode3_uin(p,ii[0],ii[1]-2,0,field)]-wmod[encode3_uin(p,ii[0],ii[1]+2,0,field)])/6.0))/(2.0*(wd[fencode3_uin(p,ii,delx2)]))    );
+
+#ifdef USE_MPI
+if(p->boundtype[field][dir][0] !=1  )
+  if(p->mpiupperb[dir]==1  )
+#else
+if(p->boundtype[field][dir][0] !=0  )
+#endif
+{
+
+  ;//for OZT test using MPI use this directive further clarification needed
+  #ifndef USE_MPI
+   if((ii[1]==(p->n[1])-3) || (ii[1]==(p->n[1])-4)  && ii[0]>1   && ii[0]<(p->n[0])-2  )
+       grad=0;
+   else if(ii[1]==2 || ii[1]==3  && ii[0]>1   && ii[0]<(p->n[0])-2  )
+       grad=0;
+  #endif
+}
+#endif
+   break;
+
+
+   case 2:
+
+#ifdef USE_SAC_3D
+  #ifdef USE_DORDER3
+ if(ii[2]>2 && ii[2]<((p->n[2])-3) )
+  grad=(  ( ((3*wmod[encode3_uin(p,ii[0],ii[1],ii[2]+1,field)]-3*wmod[encode3_uin(p,ii[0],ii[1],ii[2]-1,field)]+3.0*(wmod[encode3_uin(p,ii[0],ii[1],ii[2]-2,field)]-wmod[encode3_uin(p,ii[0],ii[1],ii[2]+2,field)])/5.0-(wmod[encode3_uin(p,ii[0],ii[1],ii[2]-3,field)]-wmod[encode3_uin(p,ii[0],ii[1],ii[2]+3,field)])/15.0)/2.0))/(2.0*(wd[fencode3_uin(p,ii,delx3)]))    );
+
+#else
+if( ii[2] >1 &&  ii[2]<((p->n[2])-2))
+	grad=(  ( ((8*wmod[encode3_uin(p,ii[0],ii[1],ii[2]+1,field)]-8*wmod[encode3_uin(p,ii[0],ii[1],ii[2]-1,field)]+wmod[encode3_uin(p,ii[0],ii[1],ii[2]-2,field)]-wmod[encode3_uin(p,ii[0],ii[1],ii[2]+2,field)])/6.0))/(2.0*(wd[fencode3_uin(p,ii,delx3)]))    );
+#endif
+
+#ifdef USE_MPI
+if(p->boundtype[field][dir][0] !=1  )
+  if(p->mpiupperb[dir]==1  )
+#else
+if(p->boundtype[field][dir][0] !=0  )
+#endif
+{
+
+  ;//for OZT test using MPI use this directive further clarification needed
+  #ifndef USE_MPI
+   if((ii[2]==(p->n[2])-3) || (ii[2]==(p->n[2])-4)  && ii[0]>1   && ii[0]<(p->n[0])-2 && ii[1]>1   && ii[1]<(p->n[1])-2  )
+       grad=0;
+   else if(ii[2]==2 || ii[2]==3  && ii[0]>1   && ii[0]<(p->n[0])-2 && ii[1]>1   && ii[1]<(p->n[1])-2  )
+       grad=0;
+  #endif
+}
+#endif
+   break;
+
+}
+
+
+
+ return grad;
+
+
+}
+
+
+
+
+
+
+
+
+
+//sum=inte(dpdz,i,j,p->dx[0]);
+
+real inte(real **w,int n, int i, int j, real dx)
+{
+
+	real res=0.0;
+
+	if (n == 2)
+	  res=dx*0.5*(w[0][j]+w[1][j]);
+	else if (n>2)
+	{
+	  if(i==0) i++;
+	  for( int ii=i;ii<n; ii++)
+	      res=res+0.5*(w[ii-1][j]+w[ii][j])*dx;
+
+
+	}
+
+	return res;
+}
+
+
+//bach3d
+
+void initialisation_user1(real *w, real *wd, struct params *p) {
+
+
+
+
+}
+
+void initialisation_user2(real *w, real *wd, struct params *p) {
+
+
+
+
+}
+
+
+
+
+

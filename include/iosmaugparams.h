@@ -1,62 +1,122 @@
 
+//Taylor-sedov blastwave problem
 
+//boundary conditions
+//period=0 mpi=1 mpiperiod=2  cont=3 contcd4=4 fixed=5 symm=6 asymm=7
+// U upper and L lower boundary type for each direction
+#define BCU0 0
+#define BCL0 0
+#define BCU1 0
+#define BCL1 0
+#define BCU2 0
+#define BCL2 0
+
+
+//Define parameter block
+#define PGAMMA 1.4
+#define PMU 1.0
+#define PETA 0.0
+#define PGRAV0 0.0
+#define PGRAV1 0.0
+#define PGRAV2 0.0
+
+
+#define PCMAX 0.02
+#define PCOURANT 0.15
+#define PRKON 0.0
+#define PSODIFON 0.0
+#define PMODDTON 0.0
+#define PDIVBON 0.0
+#define PDIVBFIX 0.0
+#define PHYPERDIFMOM 1.0
+
+//initial configuration is created!
+#define PREADINI 0.0
+#define PCFGSAVEFREQUENCY 100
+
+#define PMAXVISCOEF 0.0
+#define PCHYP3 0.0
+#define PCHYP 0.02
+#define PCHYPRHO 0.02
+#define PCHYPENERGY 0.02
+#define PCHYPB0 0.02
+#define PCHYPB1 0.02
+#define PCHYPB2 0.02
+#define PCHYPMOM0 0.4
+#define PCHYPMOM1 0.4
+#define PCHYPMOM2 0.4
+
+
+#define METADDIR "out"
+#define METADAUTHOR "MikeG"
+#define METADSDATE "Nov 2009"
+#define METADPLATFORM "swat"
+#define METADDESC "A simple test of SAAS"
+#define METADNAME "test1"
+#define METADINIFILE "test1.ini"
+#define METADLOGFILE "test1.log"
+#define METADOUTFILE "test1.out"
+
+#define NI 396
+#define NJ 396
+#define NK 1
+
+#define DT 0.000017
+#define NT 200001
+
+#define XMAX 1.0
+#define YMAX 1.0
+#define ZMAX 1.0
+
+#define XMIN -1.0
+#define YMIN -1.0
+#define ZMIN 0.0
+
+//#define CFGFILE "configs/zero1_ot_asc_4092.ini"
+#define CFGFILE "configs/zero1_kh_asc.ini"
+#define CFGOUT "out/zeroTS"
+
+real cmax[NDIM];
+real courantmax;
 
 int ngi=2;
 int ngj=2;
 int ngk=2;
 
+
+
 //Domain definition
 // Define the x domain
-#ifdef USE_SAC
-//vac ozt
-int ni;
-ni=252;    //OZT tests
-ni=ni+2*ngi;
-//ni=512;
-//real xmax = 6.2831853;  
-real xmax=1.0;
-real dx = xmax/(ni);
-#endif
+
+
+//#ifdef USE_SAC
+int ni= NI;
+
+
+real xmax= XMAX;
+real xmin= XMIN;
 
 
 
 // Define the y domain
-#ifdef USE_SAC
-//vac ozt
-int nj = 252;  //OZT tests
-//int nj=2;  //BW test
-nj=nj+2*ngj;
-//nj=512;
-//real ymax = 6.2831853; 
-real ymax = 1.0;   
-real dy = ymax/(nj);    
-//nj=41;
+int nj= NJ ;  //BW test
+real ymax= YMAX;
+real ymin= YMIN;
+
+
+
+
+
+#ifdef USE_SAC_3D
+int nk= NK;    //BW tests
+nk=nk+2*ngk;
+real zmax= ZMAX;
+real zmin= ZMIN;
+//real dx = xmax/(ni-4);
+//real dz = (zmax-zmin)/(nk);
 #endif
 
-
-
-
-real cmax[NDIM];
-real courantmax;                
-char configfile[300];
-int nt;
-
-struct params *d_p;
-struct params *p=(struct params *)malloc(sizeof(struct params));
-
-struct state *d_state;
-struct state *state=(struct state *)malloc(sizeof(struct state));
-
-
-  
-real *x=(real *)calloc(ni,sizeof(real));
-for(i=0;i<ni;i++)
-		x[i]=i*dx;
-
-real *y=(real *)calloc(nj,sizeof(real));
-for(i=0;i<nj;i++)
-		y[i]=i*dy;
-
+real *x, *y;
 
 
 int step=0;
@@ -64,170 +124,23 @@ int step=0;
 real tmax = 0.2;
 int steeringenabled=1;
 int finishsteering=0;
-
-//char *cfgfile="zero1.ini";
-
-//char *cfgfile="zero1_np020203.ini";
-//char *cfgfile="zero1_np0201.ini";
-//char *cfgfile="configs/zero1_ot_asc.ini";
-char *cfgfile="zero1_ot_asc_256.ini";
-//char *cfgfile="zero1_BW_bin.ini";
-//char *cfgout="zero1_np010203."
-char *cfgout="out/zeroOT";
-//char *cfgout="zero1_np0201.out";
-
-
-
+char configfile[300];
+char cfgfile[300]= CFGFILE;
+char cfgout[300]= CFGOUT;
+Params *d_p, *p;
+Meta *metad;
+State *d_state, *state;
 
 
 
 #ifdef USE_SAC
-dt=0.0002;  //OZT test
+real dt=DT;  //OZT test
 #endif
-
-
-//nt=3000;
-//nt=5000;
-//nt=200000;
-//nt=150000;
-nt=101;
-
-
-real *t=(real *)calloc(nt,sizeof(real));
-printf("runsim 1%d \n",nt);
-//t = [0:dt:tdomain];
-for(i=0;i<nt;i++)
-		t[i]=i*dt;
-
-//real courant = wavespeed*dt/dx;
-
-p->n[0]=ni;
-p->n[1]=nj;
-p->ng[0]=ngi;
-p->ng[1]=ngj;
-
-
-
-
-p->dt=dt;
-p->dx[0]=dx;
-p->dx[1]=dy;
-
-
-
-
-
-
-
-//ozt test
-p->gamma=1.66667;  //OZ test
-//p->gamma=2.0;  //BW test
-//p->gamma=5.0/3.0;  //BACH3D
-//alfven test
-//p->gamma=1.4;
-
-
-
-
-
-
-p->mu=1.0;
-p->eta=0.0;
-p->g[0]=0.0;
-p->g[1]=0.0;
-p->g[2]=0.0;
 #ifdef USE_SAC_3D
-
-#endif
-//p->cmax=1.0;
-p->cmax=0.02;
-
-p->rkon=0.0;
-p->sodifon=0.0;
-p->moddton=0.0;
-p->divbon=0.0;
-p->divbfix=0.0;
-p->hyperdifmom=1.0;
-p->readini=1.0;
-p->cfgsavefrequency=1;
-
-
-p->xmax[0]=xmax;
-p->xmax[1]=ymax;
-p->nt=nt;
-p->tmax=tmax;
-p->steeringenabled=steeringenabled;
-p->finishsteering=finishsteering;
-
-p->maxviscoef=0;
-//p->chyp=0.0;       
-//p->chyp=0.00000;
-p->chyp3=0.00000;
-
-
-for(i=0;i<NVAR;i++)
-  p->chyp[i]=0.0;
-
-p->chyp[rho]=0.2;
-p->chyp[energy]=0.2;
-p->chyp[b1]=0.2;
-p->chyp[b2]=0.2;
-p->chyp[mom1]=0.2;
-p->chyp[mom2]=0.2;
-p->chyp[rho]=0.2;
-
-p->npe=1;
-
-
-#ifdef USE_MPI
-//number of procs in each dim mpi only
-p->pnpe[0]=2;
-p->pnpe[1]=1;
-p->pnpe[2]=1;
+real dt=DT;  //BACH3D
 #endif
 
-
-iome elist;
-meta meta;
-
-//set boundary types
-for(int ii=0; ii<NVAR; ii++)
-for(int idir=0; idir<NDIM; idir++)
-for(int ibound=0; ibound<2; ibound++)
-{
-   (p->boundtype[ii][idir][ibound])=0;  //period=0 mpi=1 mpiperiod=2  cont=3 contcd4=4 fixed=5 symm=6 asymm=7
-}
-
-
-
-
-
-
-elist.server=(char *)calloc(500,sizeof(char));
-
-
-meta.directory=(char *)calloc(500,sizeof(char));
-meta.author=(char *)calloc(500,sizeof(char));
-meta.sdate=(char *)calloc(500,sizeof(char));
-meta.platform=(char *)calloc(500,sizeof(char));
-meta.desc=(char *)calloc(500,sizeof(char));
-meta.name=(char *)calloc(500,sizeof(char));
-meta.ini_file=(char *)calloc(500,sizeof(char));
-meta.log_file=(char *)calloc(500,sizeof(char));
-meta.out_file=(char *)calloc(500,sizeof(char));
-
-strcpy(meta.directory,"out");
-strcpy(meta.author,"MikeG");
-strcpy(meta.sdate,"Nov 2009");
-strcpy(meta.platform,"swat");
-strcpy(meta.desc,"A simple test of SAAS");
-strcpy(meta.name,"test1");
-strcpy(meta.ini_file,"test1.ini");
-strcpy(meta.log_file,"test1.log");
-strcpy(meta.out_file,"test1.out");
-
-	strcpy(elist.server,"localhost1");
-	elist.port=80801;
-	elist.id=0;
+int nt= NT;
+real *t;
 
 
