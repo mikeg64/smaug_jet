@@ -34,14 +34,14 @@
 #define PMAXVISCOEF 0.0
 #define PCHYP3 0.0
 #define PCHYP 0.02
-#define PCHYPRHO 0.1
-#define PCHYPENERGY 0.1
-#define PCHYPB0 0.1
-#define PCHYPB1 0.1
-#define PCHYPB2 0.1
-#define PCHYPMOM0 0.4
-#define PCHYPMOM1 0.4
-#define PCHYPMOM2 0.4
+#define PCHYPRHO 0.02
+#define PCHYPENERGY 0.02
+#define PCHYPB0 0.02
+#define PCHYPB1 0.02
+#define PCHYPB2 0.02
+#define PCHYPMOM0 0.2
+#define PCHYPMOM1 0.2
+#define PCHYPMOM2 0.2
 
 
 #define METADDIR "out"
@@ -54,14 +54,14 @@
 #define METADLOGFILE "test1.log"
 #define METADOUTFILE "test1.out"
 
-#define NI 125
+#define NI 508
 #define NJ 124
 #define NK 124
 
 #define DT 0.0001
 #define NT 101
 
-#define XMAX 5955555.6e0
+#define XMAX 24000000.0
 #define YMAX 4000000.0
 #define ZMAX 4000000.0
 
@@ -72,8 +72,8 @@
 
 
 
-#define CFGFILE "/home/mike/data/configs/3D_128_spic_bvert1G_asc.ini"
-#define CFGOUT "out/tube2"
+#define CFGFILE "configs/3D_tubeact_128_128_128_asc_50.ini"
+#define CFGOUT "/nobackup/users/cs1mkg/proj/smaug_jet/out/tube2"
 
 real cmax[NDIM];
 real courantmax;
