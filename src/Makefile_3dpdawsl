@@ -1,7 +1,7 @@
 #Makefile for StarSimulation IoSimTestSimple
 
 ##### User configurable options #####
-include make_inputs_3d_bede
+include make_inputs_3dpdawsl
 ### End User configurable options ###
 
 
